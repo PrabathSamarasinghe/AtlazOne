@@ -43,7 +43,13 @@ export default function TeamPage() {
   const fetchTeamMembers = async () => {
     try {
       setIsLoading(true);
-      const response = await fetch("/api/team");
+      const response = await fetch("/api/team",{
+        method: "GET",
+        cache: "no-store",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
       const data = await response.json();
       setTeam(data);
     } catch (error) {
