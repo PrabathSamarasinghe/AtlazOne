@@ -225,8 +225,12 @@ export const GET = async () => {
         };
         
         return new Response(JSON.stringify(dashboardData), {
+            status: 200,
             headers: {
                 "Content-Type": "application/json",
+                "Cache-Control": "no-store, no-cache, must-revalidate, max-age=0",
+                "Pragma": "no-cache",
+                "Expires": "0"
             },
         });
         
@@ -239,6 +243,7 @@ export const GET = async () => {
             status: 500,
             headers: {
                 "Content-Type": "application/json",
+                "Cache-Control": "no-store, no-cache, must-revalidate, max-age=0"
             }
         });
     }

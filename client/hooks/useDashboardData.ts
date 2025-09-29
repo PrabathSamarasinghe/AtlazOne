@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { fetchWithNoCache } from '@/lib/cache-utils';
 
 interface DashboardStats {
   teamMembers: any;
@@ -39,13 +40,7 @@ export const useDashboardData = () => {
       setLoading(true);
       setError(null);
       
-      const response = await fetch('/api/admin/dashboard',{
-        method: 'GET',
-        cache: 'no-store',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
+      const response = await fetchWithNoCache('/api/admin/dashboard');
       
       if (!response.ok) {
         throw new Error(`Failed to fetch dashboard data: ${response.status}`);

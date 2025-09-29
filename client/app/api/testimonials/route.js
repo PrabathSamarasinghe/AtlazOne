@@ -1,4 +1,5 @@
 import { supabase } from "@/lib/supabase";
+import { ApiResponse } from "@/lib/cache-utils";
 
 export const GET = async () => {
   try {
@@ -6,11 +7,9 @@ export const GET = async () => {
 
     if (error) throw error;
 
-    return new Response(JSON.stringify(testimonials), {
-      headers: { "Content-Type": "application/json", status: 200 },
-    });
+    return ApiResponse.success(testimonials);
   } catch (error) {
     console.error("Database error:", error);
-    return new Response("Error fetching Testimonials", { status: 500 });
+    return ApiResponse.error("Error fetching Testimonials");
   }
 };

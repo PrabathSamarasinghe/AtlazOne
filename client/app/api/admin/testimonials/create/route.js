@@ -32,10 +32,16 @@ export const POST = async (request) => {
             status: 201,
             headers: {
                 "Content-Type": "application/json",
+                "Cache-Control": "no-store, no-cache, must-revalidate, max-age=0"
             },
         });
     } catch (error) {
         console.error("Error creating testimonial:", error);
-        return new Response("Failed to create testimonial", { status: 500 });
+        return new Response("Failed to create testimonial", { 
+            status: 500,
+            headers: {
+                "Cache-Control": "no-store, no-cache, must-revalidate, max-age=0"
+            }
+        });
     }
 }
