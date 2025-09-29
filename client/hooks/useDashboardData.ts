@@ -39,7 +39,13 @@ export const useDashboardData = () => {
       setLoading(true);
       setError(null);
       
-      const response = await fetch('/api/admin/dashboard');
+      const response = await fetch('/api/admin/dashboard',{
+        method: 'GET',
+        cache: 'no-store',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
       
       if (!response.ok) {
         throw new Error(`Failed to fetch dashboard data: ${response.status}`);
