@@ -15,6 +15,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import TestimonialsModal from "@/components/admin/TestimonialsModal";
 import Image from "next/image";
+import { fetchWithNoCache } from "@/lib/cache-utils";
 
 interface Testimonial {
   id: number;
@@ -28,7 +29,8 @@ interface Testimonial {
 export default function TestimonialsPage() {
   const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [editingTestimonial, setEditingTestimonial] = useState<Testimonial | null>(null);
+  const [editingTestimonial, setEditingTestimonial] =
+    useState<Testimonial | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [isLoading, setIsLoading] = useState(true);
 
@@ -39,17 +41,17 @@ export default function TestimonialsPage() {
   const fetchTestimonials = async () => {
     try {
       setIsLoading(true);
-      const response = await fetch("/api/testimonials",{
-        method: "GET",
-        cache: "no-store",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
+      const response = await fetchWithNoCache('/api/testimonials');
+
+      if (!response.ok) {
+        throw new Error(`Failed to fetch: ${response.status}`);
+      }
+
       const data = await response.json();
       setTestimonials(data);
     } catch (error) {
       console.error("Error fetching testimonials:", error);
+      // Optionally show user-friendly error message
     } finally {
       setIsLoading(false);
     }
@@ -78,7 +80,9 @@ export default function TestimonialsPage() {
       });
 
       if (response.ok) {
-        setTestimonials(testimonials.filter((testimonial) => testimonial.id !== id));
+        setTestimonials(
+          testimonials.filter((testimonial) => testimonial.id !== id)
+        );
       } else {
         alert("Failed to delete testimonial");
       }
@@ -88,7 +92,9 @@ export default function TestimonialsPage() {
     }
   };
 
-  const handleSaveTestimonial = async (testimonialData: Omit<Testimonial, "id">) => {
+  const handleSaveTestimonial = async (
+    testimonialData: Omit<Testimonial, "id">
+  ) => {
     try {
       const url = editingTestimonial
         ? `/api/admin/testimonials/${editingTestimonial.id}`
@@ -147,10 +153,7 @@ export default function TestimonialsPage() {
         className="flex flex-col sm:flex-row sm:items-center justify-between gap-4"
       >
         <div>
-          <h1
-            className="text-3xl font-bold mb-2"
-            style={{ color: "#F8FAFC" }}
-          >
+          <h1 className="text-3xl font-bold mb-2" style={{ color: "#F8FAFC" }}>
             Testimonials <span style={{ color: "#3B82F6" }}>Management</span>
           </h1>
           <p style={{ color: "#94A3B8" }}>
@@ -286,7 +289,7 @@ export default function TestimonialsPage() {
                   className="w-8 h-8 mx-auto mb-3 opacity-50"
                   style={{ color: "#3B82F6" }}
                 />
-                
+
                 <div className="flex justify-center mb-4">
                   {renderStars(testimonial.rating)}
                 </div>
@@ -314,10 +317,7 @@ export default function TestimonialsPage() {
                     >
                       {testimonial.name}
                     </h3>
-                    <p
-                      className="text-xs"
-                      style={{ color: "#3B82F6" }}
-                    >
+                    <p className="text-xs" style={{ color: "#3B82F6" }}>
                       {testimonial.role}
                     </p>
                   </div>
@@ -346,7 +346,10 @@ export default function TestimonialsPage() {
             className="w-16 h-16 mx-auto mb-4"
             style={{ color: "#374151" }}
           />
-          <h3 className="text-xl font-semibold mb-2" style={{ color: "#94A3B8" }}>
+          <h3
+            className="text-xl font-semibold mb-2"
+            style={{ color: "#94A3B8" }}
+          >
             {searchTerm ? "No testimonials found" : "No testimonials yet"}
           </h3>
           <p className="text-sm mb-6" style={{ color: "#6B7280" }}>

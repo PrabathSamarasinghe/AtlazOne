@@ -10,19 +10,33 @@ export const GET = async (request, { params }) => {
 
         if (error) {
             if (error.code === 'PGRST116') {
-                return new Response("Testimonial not found", { status: 404 });
+                return new Response("Testimonial not found", { 
+                    status: 404,
+                    headers: {
+                        "Cache-Control": "no-store, no-cache, must-revalidate, max-age=0"
+                    }
+                });
             }
             throw error;
         }
 
         return new Response(JSON.stringify(data), {
+            status: 200,
             headers: {
                 "Content-Type": "application/json",
+                "Cache-Control": "no-store, no-cache, must-revalidate, max-age=0",
+                "Pragma": "no-cache",
+                "Expires": "0"
             }
         });
     } catch (error){
         console.error("Database error:", error);
-        return new Response("Failed to fetch testimonial", { status: 500 });
+        return new Response("Failed to fetch testimonial", { 
+            status: 500,
+            headers: {
+                "Cache-Control": "no-store, no-cache, must-revalidate, max-age=0"
+            }
+        });
     }
 }
 
@@ -39,19 +53,33 @@ export const PATCH = async (request, { params }) => {
 
         if (error) {
             if (error.code === 'PGRST116') {
-                return new Response("Testimonial not found", { status: 404 });
+                return new Response("Testimonial not found", { 
+                    status: 404,
+                    headers: {
+                        "Cache-Control": "no-store, no-cache, must-revalidate, max-age=0"
+                    }
+                });
             }
             throw error;
         }
 
         return new Response(JSON.stringify(data), {
+            status: 200,
             headers: {
                 "Content-Type": "application/json",
+                "Cache-Control": "no-store, no-cache, must-revalidate, max-age=0",
+                "Pragma": "no-cache",
+                "Expires": "0"
             }
         });
     } catch (error){
         console.error("Database error:", error);
-        return new Response("Failed to update testimonial", { status: 500 });
+        return new Response("Failed to update testimonial", { 
+            status: 500,
+            headers: {
+                "Cache-Control": "no-store, no-cache, must-revalidate, max-age=0"
+            }
+        });
     }
 }
 
@@ -67,18 +95,32 @@ export const DELETE = async (request, { params }) => {
 
         if (error) {
             if (error.code === 'PGRST116') {
-                return new Response("Testimonial not found", { status: 404 });
+                return new Response("Testimonial not found", { 
+                    status: 404,
+                    headers: {
+                        "Cache-Control": "no-store, no-cache, must-revalidate, max-age=0"
+                    }
+                });
             }
             throw error;
         }
 
         return new Response(JSON.stringify({message: "Testimonial deleted successfully"}), {
+            status: 200,
             headers: {
                 "Content-Type": "application/json",
+                "Cache-Control": "no-store, no-cache, must-revalidate, max-age=0",
+                "Pragma": "no-cache",
+                "Expires": "0"
             }
         });
     } catch (error){
         console.error("Database error:", error);
-        return new Response("Failed to delete testimonial", { status: 500 });
+        return new Response("Failed to delete testimonial", { 
+            status: 500,
+            headers: {
+                "Cache-Control": "no-store, no-cache, must-revalidate, max-age=0"
+            }
+        });
     }
 }
