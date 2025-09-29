@@ -180,15 +180,16 @@ const NavBar = () => {
     { href: "#contact", label: "Contact", icon: Mail },
   ];
   return (
-
-    <>      <motion.nav
+    <>
+      {" "}
+      <motion.nav
         className="hidden md:flex fixed top-6 left-1/4 transform -translate-x-1/2 w-full max-w-[50%] px-8 py-3 bg-[#1C1C1C]/95 text-white justify-center items-center z-50 shadow-2xl border border-[#2E2E2E] rounded-3xl backdrop-blur-xl"
-        
         initial={{ opacity: 0, y: -100 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 1, ease: [0.25, 0.46, 0.45, 0.94] }}
-      >        <div className="flex gap-2 lg:gap-6 overflow-x-auto">
-
+      >
+        {" "}
+        <div className="flex gap-2 lg:gap-6 overflow-x-auto">
           {navItems.map((item, index) => (
             <a
               key={item.href}
@@ -198,7 +199,6 @@ const NavBar = () => {
                     relative font-medium text-xs lg:text-sm px-2 lg:px-4 py-2 rounded-2xl whitespace-nowrap flex-shrink-0
                     ${
                       activeSection === item.href
-
                         ? "bg-[#ff3131] text-white shadow-lg shadow-[#a93226]/25"
                         : "hover:bg-[#2E2E2E] hover:text-[#ff3131]"
                     }
@@ -218,10 +218,8 @@ const NavBar = () => {
           onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
           className="fixed bottom-6 right-6 w-14 h-14 text-white rounded-full flex items-center justify-center z-50 shadow-2xl border"
           style={{
-
             backgroundColor: "#a93226",
             borderColor: "#2E2E2E",
-
           }}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -243,9 +241,7 @@ const NavBar = () => {
               {/* Backdrop */}{" "}
               <motion.div
                 className="fixed inset-0 backdrop-blur-md z-40"
-
                 style={{ backgroundColor: "rgba(28, 28, 28, 0.8)" }}
-
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
@@ -255,23 +251,20 @@ const NavBar = () => {
               <motion.div
                 className="fixed bottom-0 left-0 right-0 border-t rounded-t-3xl shadow-2xl z-50"
                 style={{
-
                   backgroundColor: "#1C1C1C",
                   borderColor: "#2E2E2E",
-
                 }}
                 initial={{ y: "100%" }}
                 animate={{ y: 0 }}
                 exit={{ y: "100%" }}
+                transition={{ delay: 0.3, duration: 0.5 }}
               >
                 {/* Handle Bar */}
                 <div className="flex justify-center pt-3 pb-2">
                   {" "}
                   <div
                     className="w-12 h-1.5 rounded-full"
-
                     style={{ backgroundColor: "#BDC3C7" }}
-
                   ></div>
                 </div>
 
@@ -280,9 +273,7 @@ const NavBar = () => {
                   {" "}
                   <h3
                     className="text-lg font-semibold mb-6 text-center"
-
                     style={{ color: "white" }}
-
                   >
                     Navigation
                   </h3>
@@ -299,7 +290,6 @@ const NavBar = () => {
                           style={{
                             backgroundColor:
                               activeSection === item.href
-
                                 ? "#a93226"
                                 : "#2E2E2E",
                             color:
@@ -318,11 +308,9 @@ const NavBar = () => {
                           }}
                           onMouseLeave={(e) => {
                             if (activeSection !== item.href) {
-
                               e.currentTarget.style.backgroundColor = "#2E2E2E";
                               e.currentTarget.style.color = "#BDC3C7";
                               e.currentTarget.style.borderColor = "#2E2E2E";
-
                             }
                           }}
                           aria-label={`Navigate to ${item.label} section`}

@@ -33,7 +33,7 @@ export default function Services() {
 
   useEffect(() => {
     const fetchServices = async () => {
-      const response = await fetch("/api/services",{
+      const response = await fetch("/api/services", {
         method: "GET",
         cache: "no-store",
         headers: {
@@ -83,7 +83,8 @@ export default function Services() {
             Comprehensive digital solutions tailored to accelerate your business
             growth
           </p>
-        </motion.div>        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 sm:gap-8 w-full max-w-6xl mx-auto px-4">
+        </motion.div>{" "}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 sm:gap-8 w-full max-w-6xl mx-auto px-4">
           {services.map((service, index) => (
             <motion.div
               key={index}
