@@ -42,7 +42,7 @@ export function CTA() {
             >
               <Phone className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" />
               <span className="text-xs sm:text-sm md:text-base">
-                +1 (234) 567-890
+                +94 71 130 7990
               </span>
             </a>
           </div>

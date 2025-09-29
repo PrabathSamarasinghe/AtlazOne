@@ -12,12 +12,12 @@ export function Hero() {
               </p>
               <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold leading-tight px-2 sm:px-0">
                 Transform your business with{" "}
-                <span className="text-[#ff3131]">cutting-edge</span>{" "}
-                <span className="text-[#ff3131]">digital solutions.</span>
+                <span className="text-[#ff3131]">cutting-edge</span> digital
+                solutions.
               </h1>
             </div>
 
-            <p className="text-[#BDC3C7] text-sm sm:text-base md:text-lg leading-relaxed max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg text-center lg:text-left px-2 sm:px-0 mx-auto lg:mx-0">
+            <p className="text-[#BDC3C7] text-center text-sm sm:text-base md:text-lg leading-relaxed max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg  lg:text-left px-2 sm:px-0 mx-auto lg:mx-0">
               Modernize your operations, streamline processes, and unlock new
               possibilities with comprehensive digital transformation strategies
               tailored to your business needs.

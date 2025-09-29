@@ -8,7 +8,7 @@ import {
   BarChart,
   Target,
 } from "lucide-react";
-import  ServiceCard from "./ServiceCard";
+import ServiceCard from "./ServiceCard";
 
 export function Services() {
   const services = [
@@ -100,19 +100,20 @@ export function Services() {
       <div className="max-w-7xl mx-auto">
         <div className="text-left mb-16">
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-6">
-            Design Excellence Through
+            Future-Ready Innovation
             <span className="block text-[#ff3131] mt-2 ">
-              Strategic Process
-            </span>
+              Driven by AI & ML
+            </span>{" "}
           </h2>
           <p className="text-lg text-[#BDC3C7] w-full text-justify leading-relaxed">
-            Our proven 4-step design methodology ensures every project delivers
-            exceptional user experiences that drive engagement and business
-            growth. From research to implementation, we craft designs that
-            resonate with your users.
+            We design and implement advanced AI & Machine Learning solutions
+            that unlock insights, automate processes, and deliver personalized
+            experiences. From natural language processing to predictive
+            analytics, we help businesses transform data into intelligent
+            decisions.
           </p>
-        </div>
-        <div className="grid grid-cols-1  gap-8">
+        </div>{" "}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           <ServiceCard items={services} />
         </div>
       </div>

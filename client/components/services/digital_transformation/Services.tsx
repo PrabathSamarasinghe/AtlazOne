@@ -70,7 +70,7 @@ export function Services() {
               In 6 Steps
             </span>
           </h2>
-          <p className="text-sm sm:text-base md:text-lg text-[#BDC3C7] w-full leading-relaxed text-center lg:text-left max-w-xs sm:max-w-md md:max-w-2xl lg:max-w-none mx-auto lg:mx-0 px-2 sm:px-0">
+          <p className="text-sm sm:text-base md:text-lg text-[#BDC3C7] w-full leading-relaxed text-justify  max-w-xs sm:max-w-md md:max-w-2xl lg:max-w-none mx-auto lg:mx-0 px-2 sm:px-0">
             Transform your operations and take ahead in a fast-evolving digital
             world with our structured, results-driven 6-step methodology. From
             initial assessment to complete transformation, our approach ensures

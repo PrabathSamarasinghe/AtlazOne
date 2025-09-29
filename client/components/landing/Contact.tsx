@@ -103,7 +103,7 @@ export default function Contact() {
                 Let's Discuss Your Project
               </h3>
               <p
-                className="mb-4 sm:mb-6 lg:mb-8 leading-relaxed text-sm sm:text-base"
+                className="mb-4 sm:mb-6 lg:mb-8 leading-relaxed text-sm sm:text-base text-justify"
                 style={{ color: "#2E2E2E" }}
               >
                 We're here to help bring your vision to life. Whether you need a
@@ -159,7 +159,7 @@ export default function Contact() {
                     className="text-xs sm:text-sm"
                     style={{ color: "#2E2E2E" }}
                   >
-                    +1 (555) 123-4567
+                    +94 71 130 7990
                   </p>
                 </div>
               </div>
@@ -184,7 +184,7 @@ export default function Contact() {
                     className="text-xs sm:text-sm"
                     style={{ color: "#2E2E2E" }}
                   >
-                    San Francisco, CA 94105
+                    Colombo, Sri Lanka
                   </p>
                 </div>
               </div>
@@ -206,9 +206,8 @@ export default function Contact() {
                 borderColor: "#BDC3C7",
               }}
             >
-              {!isSubmitted ? (
-                <form onSubmit={handleSubmit} className="space-y-6">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-white">
+              {!isSubmitted ? (                <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 text-white">
                     <Input
                       name="name"
                       placeholder="John Doe"

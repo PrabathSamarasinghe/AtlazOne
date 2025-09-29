@@ -77,8 +77,7 @@ export default function Services() {
             Comprehensive digital solutions tailored to accelerate your business
             growth
           </p>
-        </motion.div>
-        <div className="grid grid-cols-1 sm:grid-cols-2  gap-6 sm:gap-8 w-3/4 mx-auto">
+        </motion.div>        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 sm:gap-8 w-full max-w-6xl mx-auto px-4">
           {services.map((service, index) => (
             <motion.div
               key={index}
@@ -129,7 +128,7 @@ export default function Services() {
                     {service.title}
                   </h3>
                   <p
-                    className="leading-relaxed text-sm sm:text-base"
+                    className="leading-relaxed text-sm sm:text-base text-justify"
                     style={{ color: "#BDC3C7" }}
                   >
                     {service.description}

@@ -11,9 +11,9 @@ export function Hero() {
                 UI/UX DESIGN
               </p>
               <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold leading-tight px-2 sm:px-0">
-                Craft Intuitive and{" "}
-                <span className="text-[#ff3131]">Engaging User</span>{" "}
-                <span className="text-[#ff3131]">Experiences</span>
+                Craft <span className="text-[#ff3131]">Intuitive</span> and{" "}
+                <span className="text-[#ff3131]">Engaging </span> User
+                Experiences
               </h1>
             </div>
 

@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useRouter, usePathname } from "next/navigation";
 import {
   Home,
   Briefcase,
@@ -18,13 +19,58 @@ const NavBar = () => {
   const [isScrolling, setIsScrolling] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const scrollTimeoutRef = useRef<NodeJS.Timeout>();
+  const router = useRouter();
+  const pathname = usePathname();  // Check if we're on a service page
+  const isServicePage = pathname?.startsWith("/services/");
 
-  const scrollToSection = (
+  // Handle active section for different page types
+  useEffect(() => {
+    if (isServicePage) {
+      setActiveSection("#services");
+    } else {
+      // Reset to proper section when returning to main page
+      // Check for hash in URL first
+      const hash = window.location.hash;
+      if (hash && hash !== "#") {
+        setActiveSection(hash);
+      } else {
+        // Detect current section based on scroll position
+        const scrollTop = window.pageYOffset || document.documentElement.scrollTop || 0;
+        if (scrollTop < 100) {
+          setActiveSection("#home");
+        } else {
+          // Find the current section in viewport
+          const sections = ["#home", "#services", "#portfolio", "#team", "#blog", "#contact"];
+          const viewportCenter = window.innerHeight / 2;
+          
+          for (const sectionId of sections) {
+            const element = document.querySelector(sectionId);
+            if (element) {
+              const rect = element.getBoundingClientRect();
+              if (rect.top <= viewportCenter && rect.bottom >= viewportCenter) {
+                setActiveSection(sectionId);
+                break;
+              }
+            }
+          }
+        }
+      }
+    }
+  }, [isServicePage, pathname]);  const scrollToSection = (
     e: React.MouseEvent<HTMLAnchorElement>,
     sectionId: string
   ) => {
     e.preventDefault();
 
+    // If we're on a service page, navigate to main page with section
+    if (isServicePage) {
+      setActiveSection(sectionId);
+      router.push(`/${sectionId}`);
+      setIsMobileMenuOpen(false);
+      return;
+    }
+
+    // On main page - handle normal scrolling
     setActiveSection(sectionId);
     setIsScrolling(true);
 
@@ -96,8 +142,10 @@ const NavBar = () => {
     // Close mobile menu when navigating
     setIsMobileMenuOpen(false);
   };
-
   useEffect(() => {
+    // Don't run scroll detection on service pages
+    if (isServicePage) return;
+
     const handleScroll = () => {
       // Don't update active section during programmatic scrolling
       if (isScrolling) return;
@@ -149,14 +197,11 @@ const NavBar = () => {
         });
         ticking = true;
       }
-    };
-
-    // Initial check
+    };    // Initial check and re-check when returning from service pages
     handleScroll();
-
     window.addEventListener("scroll", throttledHandleScroll, { passive: true });
     return () => window.removeEventListener("scroll", throttledHandleScroll);
-  }, [isScrolling, activeSection]);
+  }, [isScrolling, activeSection, isServicePage, pathname]);
   const navItems = [
     { href: "#home", label: "Home", icon: Home },
     { href: "#services", label: "Services", icon: Briefcase },

@@ -62,11 +62,8 @@ export default function Team() {
           >
             Passionate innovators dedicated to bringing your vision to life
           </p>
-        </motion.div>
-
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8 ">
-          {team.map((member, index) => (            <motion.div
+        </motion.div>        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6 lg:gap-8">
+          {team.map((member, index) => (<motion.div
               key={member.id}
               className="group relative"
               initial={{ opacity: 0, y: 50 }}
@@ -117,7 +114,7 @@ export default function Team() {
                   {member.role}
                 </div>
                 <p
-                  className="text-sm mb-4 sm:mb-6 leading-relaxed px-2"
+                  className="text-sm mb-4 sm:mb-6 leading-relaxed px-2 "
 
                   style={{ color: "#BDC3C7" }}
 
@@ -138,30 +135,8 @@ export default function Team() {
 
                     />
                   </a>
-                  <a
-                    href={member.social.twitter}
-
-                    className="w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center transition-colors duration-300"
-                    style={{ backgroundColor: "#BDC3C7" }}
-                  >
-                    <Twitter
-                      className="w-4 h-4 sm:w-5 sm:h-5"
-                      style={{ color: "#1C1C1C" }}
-
-                    />
-                  </a>
-                  <a
-                    href={member.social.github}
-
-                    className="w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center transition-colors duration-300"
-                    style={{ backgroundColor: "#BDC3C7" }}
-                  >
-                    <Github
-                      className="w-4 h-4 sm:w-5 sm:h-5"
-                      style={{ color: "#1C1C1C" }}
-
-                    />
-                  </a>{" "}
+                  
+                  
                 </div>
 
 

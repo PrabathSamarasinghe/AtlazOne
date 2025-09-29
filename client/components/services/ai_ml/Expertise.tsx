@@ -53,7 +53,7 @@ export function Expertise() {
                 <li className="flex items-start gap-2 sm:gap-3">
                   <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-[#ff3131] rounded-full mt-1.5 sm:mt-2 flex-shrink-0"></div>
                   <span>
-                    Reduced operational costs by up to 40% through intelligent
+                    Reduced operational costs through intelligent
                     automation
                   </span>
                 </li>

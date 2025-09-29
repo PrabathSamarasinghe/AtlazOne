@@ -37,7 +37,9 @@ export default function Blog() {
       className="py-16 sm:py-20 lg:py-24"
       style={{ backgroundColor: "#1C1C1C" }}
     >
-      <div className="container mx-auto px-4 sm:px-6">        <motion.div
+      <div className="container mx-auto px-4 sm:px-6">
+        {" "}
+        <motion.div
           className="text-center mb-12 sm:mb-16"
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -58,8 +60,8 @@ export default function Blog() {
             Stay updated with the latest trends and insights from our tech
             experts
           </p>
-        </motion.div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+        </motion.div>{" "}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
           {blogPosts.map((post, index) => (
             <motion.article
               key={post.id}
