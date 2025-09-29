@@ -21,7 +21,13 @@ export default function Portfolio() {
 
   useEffect(() => {
     const fetchProjects = async () => {
-      const response = await fetch("/api/projects");
+      const response = await fetch("/api/projects",{
+        method: "GET",
+        cache: "no-store",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
       const data = await response.json();
       setProjects(data);
     };

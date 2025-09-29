@@ -20,7 +20,13 @@ export default function Blog() {
 
   useEffect(() => {
     const fetchBlogPosts = async () => {
-      const response = await fetch("/api/blogposts");
+      const response = await fetch("/api/blogposts", {
+        method: "GET",
+        cache: "no-store",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
       const data = await response.json();
       setBlogPosts(data);
     };

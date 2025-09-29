@@ -19,7 +19,13 @@ export default function Testimonials() {
   useEffect(() => {
     const fetchTestimonials = async () => {
       try {
-        const response = await fetch("/api/testimonials");
+        const response = await fetch("/api/testimonials",{
+          method: "GET",
+          cache: "no-store",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
         console.log(response);
         const data = await response.json();
         setTestimonials(data);

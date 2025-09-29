@@ -14,6 +14,7 @@ import {
   X,
 } from "lucide-react";
 
+
 const NavBar = () => {
   const [activeSection, setActiveSection] = useState("#home");
   const [isScrolling, setIsScrolling] = useState(false);
@@ -82,7 +83,7 @@ const NavBar = () => {
     } else {
       const element = document.querySelector(sectionId) as HTMLElement;
       if (element) {
-        const offset = 80;
+        const offset = 100;
         const elementPosition = element.offsetTop - offset;
         window.scrollTo({
           top: elementPosition,
@@ -90,53 +91,31 @@ const NavBar = () => {
         });
       }
     }
-
-    // Improved scroll end detection with fallback timeout
-    if (scrollTimeoutRef.current) {
-      clearTimeout(scrollTimeoutRef.current);
-    }
-
-    scrollTimeoutRef.current = setTimeout(() => {
-      setIsScrolling(false);
-    }, 1500);
-
-    // Modern scroll end detection
-    if ("onscrollend" in window) {
+    if (typeof (window as any).onscrollend !== "undefined") {
       const handleScrollEnd = () => {
-        if (scrollTimeoutRef.current) {
-          clearTimeout(scrollTimeoutRef.current);
-        }
         setIsScrolling(false);
         window.removeEventListener("scrollend", handleScrollEnd);
       };
       window.addEventListener("scrollend", handleScrollEnd, { once: true });
     } else {
-      // Fallback for browsers without scrollend support
       let scrollTimer: NodeJS.Timeout;
-      let lastScrollTop =
-        (window as any).pageYOffset || document.documentElement.scrollTop || 0;
+      let lastScrollTop = window.scrollY;
 
       const detectScrollEnd = () => {
-        const currentScrollTop =
-          (window as any).pageYOffset ||
-          document.documentElement.scrollTop ||
-          0;
-        if (Math.abs(currentScrollTop - lastScrollTop) < 1) {
-          if (scrollTimeoutRef.current) {
-            clearTimeout(scrollTimeoutRef.current);
-          }
+        const currentScrollTop = window.scrollY;
+        if (currentScrollTop === lastScrollTop) {
           setIsScrolling(false);
           window.removeEventListener("scroll", detectScrollEnd);
         } else {
           lastScrollTop = currentScrollTop;
           clearTimeout(scrollTimer);
-          scrollTimer = setTimeout(detectScrollEnd, 150);
+          scrollTimer = setTimeout(detectScrollEnd, 100);
         }
       };
 
       setTimeout(() => {
         window.addEventListener("scroll", detectScrollEnd);
-      }, 100);
+      }, 50);
     }
 
     // Close mobile menu when navigating
@@ -147,7 +126,6 @@ const NavBar = () => {
     if (isServicePage) return;
 
     const handleScroll = () => {
-      // Don't update active section during programmatic scrolling
       if (isScrolling) return;
 
       const sections = [
@@ -155,33 +133,23 @@ const NavBar = () => {
         "#services",
         "#portfolio",
         "#team",
+        // "#testimonials",
         "#blog",
         "#contact",
-      ]; // Handle home section with better threshold
-      const scrollTop =
-        (window as any).pageYOffset || document.documentElement.scrollTop || 0;
-      if (scrollTop < 100) {
+      ];
+
+      if (window.scrollY < 150) {
         setActiveSection("#home");
         return;
       }
 
-      // Improved section detection with viewport center
-      const viewportCenter = window.innerHeight / 2;
-      let activeFound = false;
-
       for (const sectionId of sections) {
-        if (activeFound) break;
-
         const element = document.querySelector(sectionId);
         if (element) {
           const rect = element.getBoundingClientRect();
-
-          // Section is active if its center is closest to viewport center
-          if (rect.top <= viewportCenter && rect.bottom >= viewportCenter) {
-            if (activeSection !== sectionId) {
-              setActiveSection(sectionId);
-            }
-            activeFound = true;
+          if (rect.top <= 150 && rect.bottom >= 150) {
+            setActiveSection(sectionId);
+            break;
           }
         }
       }
@@ -207,19 +175,20 @@ const NavBar = () => {
     { href: "#services", label: "Services", icon: Briefcase },
     { href: "#portfolio", label: "Portfolio", icon: FolderOpen },
     { href: "#team", label: "Team", icon: Users },
+    // { href: "#testimonials", label: "Testimonials", icon: MessageSquare },
     { href: "#blog", label: "Blog", icon: BookOpen },
     { href: "#contact", label: "Contact", icon: Mail },
   ];
-
   return (
-    <>
-      <motion.nav
-        className="hidden md:flex fixed top-6 left-1/3 -translate-x-1/2 w-fit max-w-[95%] lg:max-w-[90%] px-4 lg:px-8 py-2 lg:py-3 bg-[#1C1C1C]/95 text-white items-center z-50 shadow-2xl border border-[#2E2E2E] rounded-3xl backdrop-blur-xl"
+
+    <>      <motion.nav
+        className="hidden md:flex fixed top-6 left-1/4 transform -translate-x-1/2 w-full max-w-[50%] px-8 py-3 bg-[#1C1C1C]/95 text-white justify-center items-center z-50 shadow-2xl border border-[#2E2E2E] rounded-3xl backdrop-blur-xl"
+        
         initial={{ opacity: 0, y: -100 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 1, ease: [0.25, 0.46, 0.45, 0.94] }}
-      >
-        <div className="flex gap-2 lg:gap-6 overflow-x-auto">
+      >        <div className="flex gap-2 lg:gap-6 overflow-x-auto">
+
           {navItems.map((item, index) => (
             <a
               key={item.href}
@@ -229,6 +198,7 @@ const NavBar = () => {
                     relative font-medium text-xs lg:text-sm px-2 lg:px-4 py-2 rounded-2xl whitespace-nowrap flex-shrink-0
                     ${
                       activeSection === item.href
+
                         ? "bg-[#ff3131] text-white shadow-lg shadow-[#a93226]/25"
                         : "hover:bg-[#2E2E2E] hover:text-[#ff3131]"
                     }
@@ -240,21 +210,24 @@ const NavBar = () => {
             </a>
           ))}
         </div>
-      </motion.nav>{" "}
+      </motion.nav>
       {/* Mobile Navigation */}
       <div className="md:hidden">
-        {/* Mobile Menu Toggle Button */}
+        {/* Mobile Menu Toggle Button */}{" "}
         <motion.button
           onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
           className="fixed bottom-6 right-6 w-14 h-14 text-white rounded-full flex items-center justify-center z-50 shadow-2xl border"
           style={{
+
             backgroundColor: "#a93226",
             borderColor: "#2E2E2E",
+
           }}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           aria-label="Toggle navigation menu"
         >
+          {" "}
           <AnimatePresence mode="wait">
             {isMobileMenuOpen ? (
               <X size={28} strokeWidth={2.5} />
@@ -262,26 +235,30 @@ const NavBar = () => {
               <Menu size={28} strokeWidth={2.5} />
             )}
           </AnimatePresence>
-        </motion.button>{" "}
+        </motion.button>
         {/* Mobile Menu Panel */}
         <AnimatePresence>
           {isMobileMenuOpen && (
             <>
-              {/* Backdrop */}
+              {/* Backdrop */}{" "}
               <motion.div
                 className="fixed inset-0 backdrop-blur-md z-40"
+
                 style={{ backgroundColor: "rgba(28, 28, 28, 0.8)" }}
+
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
                 onClick={() => setIsMobileMenuOpen(false)}
               />
-              {/* Slide-up Menu Panel */}
+              {/* Slide-up Menu Panel */}{" "}
               <motion.div
                 className="fixed bottom-0 left-0 right-0 border-t rounded-t-3xl shadow-2xl z-50"
                 style={{
+
                   backgroundColor: "#1C1C1C",
                   borderColor: "#2E2E2E",
+
                 }}
                 initial={{ y: "100%" }}
                 animate={{ y: 0 }}
@@ -289,21 +266,28 @@ const NavBar = () => {
               >
                 {/* Handle Bar */}
                 <div className="flex justify-center pt-3 pb-2">
+                  {" "}
                   <div
                     className="w-12 h-1.5 rounded-full"
+
                     style={{ backgroundColor: "#BDC3C7" }}
+
                   ></div>
                 </div>
 
                 {/* Menu Items */}
                 <div className="px-6 pb-8">
+                  {" "}
                   <h3
                     className="text-lg font-semibold mb-6 text-center"
+
                     style={{ color: "white" }}
+
                   >
                     Navigation
                   </h3>
                   <div className="grid grid-cols-1 gap-1">
+                    {" "}
                     {navItems.map((item, index) => {
                       const IconComponent = item.icon;
                       return (
@@ -315,6 +299,7 @@ const NavBar = () => {
                           style={{
                             backgroundColor:
                               activeSection === item.href
+
                                 ? "#a93226"
                                 : "#2E2E2E",
                             color:
@@ -333,9 +318,11 @@ const NavBar = () => {
                           }}
                           onMouseLeave={(e) => {
                             if (activeSection !== item.href) {
+
                               e.currentTarget.style.backgroundColor = "#2E2E2E";
                               e.currentTarget.style.color = "#BDC3C7";
                               e.currentTarget.style.borderColor = "#2E2E2E";
+
                             }
                           }}
                           aria-label={`Navigate to ${item.label} section`}

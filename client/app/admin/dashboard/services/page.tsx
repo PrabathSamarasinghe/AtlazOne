@@ -47,7 +47,13 @@ export default function ServicesPage() {
   useEffect(() => {
     const fetchServices = async () => {
       try {
-        const response = await fetch("/api/services");
+        const response = await fetch("/api/services",{
+          method: "GET",
+          cache: "no-store",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
         const data = await response.json();
         setServices(data);
       } catch (error) {

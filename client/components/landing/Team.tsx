@@ -23,7 +23,13 @@ export default function Team() {
   useEffect(() => {
     const fetchTeamData = async () => {
       try {
-        const response = await fetch("/api/team");
+        const response = await fetch("/api/team",{
+          method: "GET",
+          cache: "no-store",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
         const data = await response.json();
         setTeam(data);
       } catch (error) {

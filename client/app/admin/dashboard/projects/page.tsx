@@ -82,7 +82,13 @@ export default function ProjectsPage() {
 
   const fetchProjects = async () => {
     try {
-      const response = await fetch('/api/projects');
+      const response = await fetch('/api/projects',{
+        method: 'GET',
+        cache: 'no-store',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
       const data = await response.json();
       // Transform data to match our interface
       const transformedProjects = data.map((project: any) => ({
