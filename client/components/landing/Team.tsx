@@ -32,23 +32,19 @@ export default function Team() {
     };
     fetchTeamData();
   }, []);
-  return (
-    <motion.section
+  return (    <motion.section
       className="py-24"
-
       style={{ backgroundColor: "white" }}
       initial={{ opacity: 0 }}
       whileInView={{ opacity: 1 }}
-
-      viewport={{ margin: "-100px" }}
+      viewport={{ once: true, margin: "-20%" }}
       transition={{ duration: 1.2, ease: [0.25, 0.46, 0.45, 0.94] }}
     >
-      <div className="container mx-auto px-4 sm:px-6">
-        <motion.div
+      <div className="container mx-auto px-4 sm:px-6">        <motion.div
           className="text-center mb-12 sm:mb-16"
           initial={{ opacity: 0, y: 40 }}
           whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ margin: "-100px" }}
+          viewport={{ once: true, margin: "-20%" }}
           transition={{ duration: 1, ease: [0.25, 0.46, 0.45, 0.94] }}
         >
           {" "}
@@ -70,14 +66,12 @@ export default function Team() {
 
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8 ">
-          {team.map((member, index) => (
-            <motion.div
+          {team.map((member, index) => (            <motion.div
               key={member.id}
               className="group relative"
               initial={{ opacity: 0, y: 50 }}
               whileInView={{ opacity: 1, y: 0 }}
-
-              viewport={{ margin: "-100px" }}
+              viewport={{ once: true, margin: "-10%" }}
               transition={{
                 duration: 0.8,
                 delay: index * 0.15,

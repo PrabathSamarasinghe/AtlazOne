@@ -37,12 +37,11 @@ export default function Blog() {
       className="py-16 sm:py-20 lg:py-24"
       style={{ backgroundColor: "#1C1C1C" }}
     >
-      <div className="container mx-auto px-4 sm:px-6">
-        <motion.div
+      <div className="container mx-auto px-4 sm:px-6">        <motion.div
           className="text-center mb-12 sm:mb-16"
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ margin: "-100px" }}
+          viewport={{ once: true, margin: "-20%" }}
           transition={{ duration: 0.8 }}
         >
           {" "}

@@ -36,11 +36,9 @@ export default function Portfolio() {
     <motion.section
       className="py-24"
 
-      style={{ backgroundColor: "#1C1C1C" }}
-      initial={{ opacity: 0 }}
+      style={{ backgroundColor: "#1C1C1C" }}      initial={{ opacity: 0 }}
       whileInView={{ opacity: 1 }}
-
-      viewport={{ margin: "-100px" }}
+      viewport={{ once: true, margin: "-20%" }}
       transition={{ duration: 1.2, ease: [0.25, 0.46, 0.45, 0.94] }}
     >
       <div className="container mx-auto px-4 sm:px-6">
@@ -48,7 +46,7 @@ export default function Portfolio() {
           className="text-center mb-12 sm:mb-16"
           initial={{ opacity: 0, y: 40 }}
           whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ margin: "-100px" }}
+          viewport={{ once: true, margin: "-20%" }}
           transition={{ duration: 1, ease: [0.25, 0.46, 0.45, 0.94] }}
         >
           {" "}
@@ -78,10 +76,9 @@ export default function Portfolio() {
                 backgroundColor: "#2E2E2E",
                 borderColor: "#BDC3C7",
 
-              }}
-              initial={{ opacity: 0 }}
+              }}              initial={{ opacity: 0 }}
               whileInView={{ opacity: 1 }}
-              viewport={{ margin: "-100px" }}
+              viewport={{ once: true, margin: "-10%" }}
               transition={{
                 duration: 0.8,
                 delay: index * 0.15,
