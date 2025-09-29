@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <!-- Background circle with gradient -->
+  <defs>
+    <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#1E40AF;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#3B82F6;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#60A5FA;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="logoGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#FFFFFF;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#DBEAFE;stop-opacity:0.9" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Main background -->
+  <circle cx="50" cy="50" r="48" fill="url(#bgGradient)" stroke="#1E3A8A" stroke-width="2"/>
+  
+  <!-- Hexagonal frame (simplified for favicon) -->
+  <path d="M50 15L75 30V60L50 75L25 60V30L50 15Z" 
+        stroke="url(#logoGradient)" 
+        stroke-width="2.5" 
+        fill="transparent"/>
+  
+  <!-- Inner circle -->
+  <circle cx="50" cy="50" r="18" 
+          stroke="url(#logoGradient)" 
+          stroke-width="2" 
+          fill="transparent"/>
+  
+  <!-- Innovation spark in center -->
+  <path d="M45 40L50 30L55 40L50 50L53 53L47 60L50 55L45 50L42 53L48 47L45 40Z" 
+        fill="url(#logoGradient)"/>
+  
+  <!-- Small orbiting dots -->
+  <circle cx="68" cy="50" r="2" fill="#DBEAFE"/>
+  <circle cx="32" cy="50" r="1.5" fill="#DBEAFE"/>
+  <circle cx="50" cy="32" r="1.5" fill="#DBEAFE"/>
+  <circle cx="50" cy="68" r="1.5" fill="#DBEAFE"/>
+</svg>
