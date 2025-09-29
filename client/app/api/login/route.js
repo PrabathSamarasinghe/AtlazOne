@@ -1,6 +1,6 @@
 import jwt from 'jsonwebtoken';
 import { NextResponse } from 'next/server';
-import bcrypt from 'bcrypt';
+import bcrypt from 'bcryptjs';
 import { cookies } from "next/headers";
 import { supabase } from '@/lib/supabase';
 
