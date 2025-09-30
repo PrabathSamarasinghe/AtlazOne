@@ -36,8 +36,39 @@ export default function Hero() {
     >
       {" "}
       <div className="relative z-10 w-full max-w-7xl mx-auto text-center lg:text-left">
+        {/* Mobile Layout: Logo at top, then company name */}
+        <div className="flex flex-col items-center lg:hidden mb-6">
+          {/* Logo at the top for mobile */}
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.1 }}
+            className="mb-4"
+          >
+            <Image
+              src="/ATLAZONE.png"
+              alt="ATLAZONE"
+              width={120}
+              height={40}
+              className="h-16 sm:h-20 w-auto"
+            />
+          </motion.div>
+          
+          {/* Company name below logo for mobile */}
+          <motion.h1 
+            className="text-4xl sm:text-5xl font-bold tracking-tight"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.2 }}
+          >
+            <span className="text-white">ATLAZ</span>
+            <span className="text-[#ff3131]">ONE</span>
+          </motion.h1>
+        </div>
+
+        {/* Desktop Layout: Logo and company name side by side */}
         <motion.div
-          className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-2 sm:gap-4 mb-6 sm:mb-8"
+          className="hidden lg:flex items-center justify-center lg:justify-start gap-4 mb-6 sm:mb-8"
           initial={{ opacity: 0, y: 50 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
@@ -47,26 +78,27 @@ export default function Hero() {
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.8, delay: 0.1 }}
-            className="order-2 sm:order-1"
           >
             <Image
               src="/ATLAZONE.png"
               alt="ATLAZONE"
               width={120}
               height={40}
-              className="h-8 sm:h-12 md:h-16 lg:h-20 xl:h-24 w-auto"
+              className="h-20 lg:h-24 xl:h-28 w-auto"
             />
           </motion.div>
-          <motion.h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl 2xl:text-8xl font-bold tracking-tight order-1 sm:order-2">
+          <motion.h1 className="text-5xl lg:text-6xl xl:text-7xl 2xl:text-8xl font-bold tracking-tight">
             <span className="text-white">ATLAZ</span>
             <span className="text-[#ff3131]">ONE</span>
           </motion.h1>
-        </motion.div>{" "}
+        </motion.div>
+        
+        {/* Motto for all screen sizes */}
         <motion.p
-          className="text-sm sm:text-base md:text-lg lg:text-xl xl:text-2xl leading-relaxed text-white px-2 sm:px-4 max-w-sm sm:max-w-md md:max-w-lg lg:max-w-2xl mx-auto lg:mx-0"
+          className="text-base sm:text-lg md:text-lg lg:text-xl xl:text-2xl leading-relaxed text-white px-2 sm:px-4 max-w-sm sm:max-w-md md:max-w-lg lg:max-w-2xl mx-auto lg:mx-0"
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.2 }}
+          transition={{ duration: 0.8, delay: 0.4 }}
         >
           Decide.Deliver.Dominate
         </motion.p>

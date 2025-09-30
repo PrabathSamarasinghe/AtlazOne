@@ -59,7 +59,7 @@ export default function BlogsPage() {
           transition={{ duration: 0.6 }}
         >
           <button
-            onClick={() => router.push('/')}
+            onClick={() => router.push('/#blog')}
             className="flex items-center text-white hover:text-red-500 transition-colors mr-6"
           >
             <ArrowLeft className="w-5 h-5 mr-2" />
