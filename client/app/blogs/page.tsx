@@ -1,6 +1,6 @@
 "use client";
 import { motion } from "framer-motion";
-import { Calendar, ArrowRight, User } from "lucide-react";
+import { Calendar, ArrowRight, User, ArrowLeft } from "lucide-react";
 import Image from "next/image";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
@@ -17,9 +17,10 @@ interface BlogPost {
   read_time: string;
 }
 
-export default function Blog() {
+export default function BlogsPage() {
   const [blogPosts, setBlogPosts] = useState<BlogPost[]>([]);
   const [selectedBlog, setSelectedBlog] = useState<BlogPost | null>(null);
+  const [loading, setLoading] = useState(true);
   const router = useRouter();
 
   useEffect(() => {
@@ -31,59 +32,77 @@ export default function Blog() {
         setBlogPosts(data);
       } catch (error) {
         console.error('Error fetching blog posts:', error);
+      } finally {
+        setLoading(false);
       }
     };
 
     fetchBlogPosts();
-
-    return () => {
-      setBlogPosts([]);
-    };
   }, []);
 
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: "#1C1C1C" }}>
+        <div className="text-white text-xl">Loading...</div>
+      </div>
+    );
+  }
+
   return (
-    <section
-      className="py-16 sm:py-20 lg:py-24"
-      style={{ backgroundColor: "#1C1C1C" }}
-    >
-      <div className="container mx-auto px-4 sm:px-6">
-        {" "}
+    <div className="min-h-screen" style={{ backgroundColor: "#1C1C1C" }}>
+      {/* Header */}
+      <div className="container mx-auto px-4 sm:px-6 pt-24 pb-16">
         <motion.div
-          className="text-center mb-12 sm:mb-16"
+          className="flex items-center mb-8"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+        >
+          <button
+            onClick={() => router.push('/')}
+            className="flex items-center text-white hover:text-red-500 transition-colors mr-6"
+          >
+            <ArrowLeft className="w-5 h-5 mr-2" />
+            Back to Home
+          </button>
+        </motion.div>
+
+        <motion.div
+          className="text-center mb-16"
           initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-20%" }}
+          animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
         >
-          {" "}
-          <h2
-            className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-3 sm:mb-4"
+          <h1
+            className="text-4xl sm:text-5xl md:text-6xl font-bold mb-4"
             style={{ color: "white" }}
           >
-            Latest <span style={{ color: "#ff3131" }}>Insights</span>
-          </h2>
+            All <span style={{ color: "#ff3131" }}>Blog Posts</span>
+          </h1>
           <p
-            className="text-base sm:text-lg md:text-xl max-w-xs sm:max-w-md md:max-w-2xl mx-auto px-4"
+            className="text-lg md:text-xl max-w-2xl mx-auto"
             style={{ color: "#BDC3C7" }}
           >
-            Stay updated with the latest trends and insights from our tech
-            experts
+            Discover insights, trends, and expert opinions from our tech team
           </p>
-        </motion.div>{" "}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
-          {blogPosts.slice(0, 3).map((post, index) => (
+          <div className="mt-4" style={{ color: "#BDC3C7" }}>
+            {blogPosts.length} {blogPosts.length === 1 ? 'article' : 'articles'} found
+          </div>
+        </motion.div>
+
+        {/* Blog Posts Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {blogPosts.map((post, index) => (
             <motion.article
               key={post.id}
               className="group cursor-pointer"
               initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
+              animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: index * 0.1 }}
               whileHover={{ y: -10 }}
             >
-              {" "}
               <div
-                className="rounded-2xl overflow-hidden  transition-all duration-300 h-full"
+                className="rounded-2xl overflow-hidden transition-all duration-300 h-full"
                 style={{
                   backgroundColor: "#2E2E2E",
                   borderColor: "#BDC3C7",
@@ -114,8 +133,9 @@ export default function Blog() {
                       {post.category}
                     </span>
                   </div>
-                </div>{" "}
-                <div className="p-6 flex flex-col ">
+                </div>
+
+                <div className="p-6 flex flex-col">
                   <div className="flex-1">
                     <div
                       className="flex items-center text-sm mb-4"
@@ -154,27 +174,15 @@ export default function Blog() {
               </div>
             </motion.article>
           ))}
-        </div>{" "}
-        <motion.div
-          className="text-center mt-12"
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6, delay: 0.3 }}
-        >
-          {" "}
-          <button
-            className="px-8 py-4 font-semibold rounded-full transition-all duration-300 hover:shadow-lg"
-            style={{
-              backgroundColor: "#a93226",
-              color: "white",
-              boxShadow: "0 10px 25px rgba(169, 50, 38, 0.15)",
-            }}
-            onClick={() => router.push('/blogs')}
-          >
-            See More
-          </button>
-        </motion.div>
+        </div>
+
+        {blogPosts.length === 0 && (
+          <div className="text-center py-16">
+            <p className="text-xl" style={{ color: "#BDC3C7" }}>
+              No blog posts found.
+            </p>
+          </div>
+        )}
       </div>
 
       {/* Blog Detail Modal */}
@@ -249,6 +257,6 @@ export default function Blog() {
           </div>
         </div>
       )}
-    </section>
+    </div>
   );
 }
