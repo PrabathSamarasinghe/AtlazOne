@@ -5,6 +5,7 @@ import Image from "next/image";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { fetchWithNoCache } from "@/lib/cache-utils";
+import LoadingComponent from "@/components/LoadingComponent";
 
 interface BlogPost {
   id: number;
@@ -43,7 +44,7 @@ export default function BlogsPage() {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: "#1C1C1C" }}>
-        <div className="text-white text-xl">Loading...</div>
+        <LoadingComponent />
       </div>
     );
   }

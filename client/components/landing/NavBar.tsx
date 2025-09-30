@@ -14,50 +14,67 @@ import {
   X,
 } from "lucide-react";
 
-
 const NavBar = () => {
   const [activeSection, setActiveSection] = useState("#home");
   const [isScrolling, setIsScrolling] = useState(false);
+  const [targetSection, setTargetSection] = useState<string | null>(null); // Track intended destination
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const scrollTimeoutRef = useRef<NodeJS.Timeout>();
   const router = useRouter();
-  const pathname = usePathname();  // Check if we're on a service page
+  const pathname = usePathname(); // Check if we're on a service page
   const isServicePage = pathname?.startsWith("/services/");
-
   // Handle active section for different page types
   useEffect(() => {
     if (isServicePage) {
       setActiveSection("#services");
     } else {
-      // Reset to proper section when returning to main page
-      // Check for hash in URL first
+      // When returning to main page, wait for content to load
       const hash = window.location.hash;
       if (hash && hash !== "#") {
         setActiveSection(hash);
       } else {
-        // Detect current section based on scroll position
-        const scrollTop = window.pageYOffset || document.documentElement.scrollTop || 0;
-        if (scrollTop < 100) {
-          setActiveSection("#home");
-        } else {
-          // Find the current section in viewport
-          const sections = ["#home", "#services", "#portfolio", "#team", "#blog", "#contact"];
-          const viewportCenter = window.innerHeight / 2;
-          
-          for (const sectionId of sections) {
-            const element = document.querySelector(sectionId);
-            if (element) {
-              const rect = element.getBoundingClientRect();
-              if (rect.top <= viewportCenter && rect.bottom >= viewportCenter) {
-                setActiveSection(sectionId);
-                break;
+        // Default to home when returning from service pages
+        setActiveSection("#home");
+
+        // Add a longer delay to ensure MainPageWrapper content is loaded
+        const detectSectionTimeout = setTimeout(() => {
+          const scrollTop =
+            window.pageYOffset || document.documentElement.scrollTop || 0;
+          if (scrollTop < 100) {
+            setActiveSection("#home");
+          } else {
+            // Find the current section in viewport
+            const sections = [
+              "#home",
+              "#services",
+              "#portfolio",
+              "#team",
+              "#blog",
+              "#contact",
+            ];
+            const viewportCenter = window.innerHeight / 2;
+
+            for (const sectionId of sections) {
+              const element = document.querySelector(sectionId);
+              if (element) {
+                const rect = element.getBoundingClientRect();
+                if (
+                  rect.top <= viewportCenter &&
+                  rect.bottom >= viewportCenter
+                ) {
+                  setActiveSection(sectionId);
+                  break;
+                }
               }
             }
           }
-        }
+        }, 1000); // Longer delay for content loading
+
+        return () => clearTimeout(detectSectionTimeout);
       }
     }
-  }, [isServicePage, pathname]);  const scrollToSection = (
+  }, [isServicePage, pathname]);
+  const scrollToSection = (
     e: React.MouseEvent<HTMLAnchorElement>,
     sectionId: string
   ) => {
@@ -72,7 +89,8 @@ const NavBar = () => {
     }
 
     // On main page - handle normal scrolling
-    setActiveSection(sectionId);
+    setActiveSection(sectionId); // Set immediately to prevent flickering
+    setTargetSection(sectionId); // Track the intended destination
     setIsScrolling(true);
 
     if (sectionId === "#home") {
@@ -91,26 +109,38 @@ const NavBar = () => {
         });
       }
     }
+
+    // Enhanced scroll end detection
     if (typeof (window as any).onscrollend !== "undefined") {
       const handleScrollEnd = () => {
         setIsScrolling(false);
+        setTargetSection(null); // Clear target when scrolling ends
         window.removeEventListener("scrollend", handleScrollEnd);
       };
       window.addEventListener("scrollend", handleScrollEnd, { once: true });
     } else {
+      // Fallback for browsers without scrollend event
       let scrollTimer: NodeJS.Timeout;
       let lastScrollTop = window.scrollY;
+      let stableCount = 0;
 
       const detectScrollEnd = () => {
         const currentScrollTop = window.scrollY;
-        if (currentScrollTop === lastScrollTop) {
-          setIsScrolling(false);
-          window.removeEventListener("scroll", detectScrollEnd);
+        if (Math.abs(currentScrollTop - lastScrollTop) < 1) {
+          stableCount++;
+          if (stableCount >= 3) {
+            // Require 3 consecutive stable readings
+            setIsScrolling(false);
+            setTargetSection(null); // Clear target when scrolling ends
+            window.removeEventListener("scroll", detectScrollEnd);
+            return;
+          }
         } else {
-          lastScrollTop = currentScrollTop;
-          clearTimeout(scrollTimer);
-          scrollTimer = setTimeout(detectScrollEnd, 100);
+          stableCount = 0;
         }
+        lastScrollTop = currentScrollTop;
+        clearTimeout(scrollTimer);
+        scrollTimer = setTimeout(detectScrollEnd, 100);
       };
 
       setTimeout(() => {
@@ -126,7 +156,7 @@ const NavBar = () => {
     if (isServicePage) return;
 
     const handleScroll = () => {
-      if (isScrolling) return;
+      if (isScrolling || targetSection) return; // Skip detection during programmatic scrolling or when target is set
 
       const sections = [
         "#home",
@@ -143,11 +173,18 @@ const NavBar = () => {
         return;
       }
 
+      // Use larger thresholds for more stable detection
+      const viewportCenter = window.innerHeight / 3; // Changed from 150px to viewport-based
+
       for (const sectionId of sections) {
         const element = document.querySelector(sectionId);
         if (element) {
           const rect = element.getBoundingClientRect();
-          if (rect.top <= 150 && rect.bottom >= 150) {
+          // Require more of the section to be visible before highlighting
+          if (
+            rect.top <= viewportCenter &&
+            rect.bottom >= viewportCenter + 100
+          ) {
             setActiveSection(sectionId);
             break;
           }
@@ -155,21 +192,57 @@ const NavBar = () => {
       }
     };
 
-    // Throttle scroll events for better performance
+    // More aggressive throttling for smoother experience
     let ticking = false;
+    let scrollTimeout: NodeJS.Timeout;
+
     const throttledHandleScroll = () => {
-      if (!ticking) {
+      if (!ticking && !isScrolling && !targetSection) {
         requestAnimationFrame(() => {
           handleScroll();
           ticking = false;
         });
         ticking = true;
       }
-    };    // Initial check and re-check when returning from service pages
+
+      // Additional debouncing
+      clearTimeout(scrollTimeout);
+      scrollTimeout = setTimeout(() => {
+        if (!isScrolling && !targetSection) {
+          handleScroll();
+        }
+      }, 150);
+    };
+
+    // Initial check and re-check when returning from service pages
     handleScroll();
+
+    // Add a delay to ensure components are mounted
+    const initialTimeout = setTimeout(() => {
+      handleScroll();
+    }, 500);
+
+    // Listen for main page loaded event
+    const handleMainPageLoaded = () => {
+      console.log("🔄 Main page loaded, updating navbar detection...");
+      setTimeout(() => {
+        if (!isScrolling && !targetSection) {
+          handleScroll();
+        }
+        console.log("📍 Navbar section detection completed");
+      }, 100);
+    };
+
     window.addEventListener("scroll", throttledHandleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", throttledHandleScroll);
-  }, [isScrolling, activeSection, isServicePage, pathname]);
+    window.addEventListener("mainPageLoaded", handleMainPageLoaded);
+
+    return () => {
+      window.removeEventListener("scroll", throttledHandleScroll);
+      window.removeEventListener("mainPageLoaded", handleMainPageLoaded);
+      clearTimeout(initialTimeout);
+      clearTimeout(scrollTimeout);
+    };
+  }, [isScrolling, targetSection, isServicePage, pathname]);
   const navItems = [
     { href: "#home", label: "Home", icon: Home },
     { href: "#services", label: "Services", icon: Briefcase },

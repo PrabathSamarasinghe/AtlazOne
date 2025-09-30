@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { getDirectServices } from "@/lib/direct-queries";
+import LoadingComponent from "@/components/LoadingComponent";
 
 import { type LucideIcon } from "lucide-react";
 
@@ -18,6 +19,10 @@ interface Service {
   price: number;
 }
 
+interface ServicesProps {
+  preloadedData?: Service[];
+}
+
 const getLucideIcon = (iconName: keyof typeof icons): LucideIcon | null => {
   const icons: { [key: string]: LucideIcon } = {
     LaptopIcon,
@@ -28,12 +33,19 @@ const getLucideIcon = (iconName: keyof typeof icons): LucideIcon | null => {
   return icons[iconName] || null;
 };
 
-export default function Services() {
+export default function Services({ preloadedData }: ServicesProps) {
   const [services, setServices] = useState<Service[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(!preloadedData);
   const router = useRouter();
 
   useEffect(() => {
+    if (preloadedData) {
+      setServices(preloadedData);
+      setLoading(false);
+      console.log('✅ Services using preloaded data:', preloadedData.length);
+      return;
+    }
+
     const fetchServices = async () => {
       try {
         setLoading(true);
@@ -50,9 +62,11 @@ export default function Services() {
     fetchServices();
 
     return () => {
-      setServices([]);
+      if (!preloadedData) {
+        setServices([]);
+      }
     };
-  }, []);
+  }, [preloadedData]);
   return (
     <motion.section
       className="py-24"
@@ -85,8 +99,11 @@ export default function Services() {
           >
             Comprehensive digital solutions tailored to accelerate your business
             growth
-          </p>
-        </motion.div>{" "}
+          </p>        </motion.div>{" "}
+        {/* Loading State */}
+        {loading ? (
+          <LoadingComponent />
+        ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 sm:gap-8 w-full max-w-6xl mx-auto px-4">
           {services.map((service, index) => (
             <motion.div
@@ -181,9 +198,9 @@ export default function Services() {
                   </button>
                 </div>
               </div>
-            </motion.div>
-          ))}
+            </motion.div>          ))}
         </div>
+        )}
       </div>
     </motion.section>
   );

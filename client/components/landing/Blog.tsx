@@ -5,6 +5,7 @@ import Image from "next/image";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { getDirectBlogPosts } from "@/lib/direct-queries";
+import LoadingComponent from "@/components/LoadingComponent";
 
 interface BlogPost {
   id: number;
@@ -17,10 +18,14 @@ interface BlogPost {
   read_time: string;
 }
 
-export default function Blog() {
+interface BlogProps {
+  preloadedData?: BlogPost[];
+}
+
+export default function Blog({ preloadedData }: BlogProps) {
   const [blogPosts, setBlogPosts] = useState<BlogPost[]>([]);
   const [selectedBlog, setSelectedBlog] = useState<BlogPost | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(!preloadedData);
   const [mounted, setMounted] = useState(false);
   const router = useRouter();
 
@@ -30,6 +35,13 @@ export default function Blog() {
 
   useEffect(() => {
     if (!mounted) return;
+
+    if (preloadedData) {
+      setBlogPosts(preloadedData);
+      setLoading(false);
+      console.log('✅ Blog using preloaded data:', preloadedData.length);
+      return;
+    }
     
     const fetchBlogPosts = async () => {
       try {
@@ -46,14 +58,12 @@ export default function Blog() {
 
     fetchBlogPosts();
 
-    // Optional: Set up real-time updates (comment out to disable)
-    // const subscription = subscribeToTableChanges('blog_posts', fetchBlogPosts);
-
     return () => {
-      setBlogPosts([]);
-      // unsubscribeFromChanges(subscription);
+      if (!preloadedData) {
+        setBlogPosts([]);
+      }
     };
-  }, [mounted]);
+  }, [mounted, preloadedData]);
 
   return (
     <section
@@ -61,7 +71,6 @@ export default function Blog() {
       style={{ backgroundColor: "#1C1C1C" }}
     >
       <div className="container mx-auto px-4 sm:px-6">
-        {" "}
         <motion.div
           className="text-center mb-12 sm:mb-16"
           initial={{ opacity: 0, y: 30 }}
@@ -69,7 +78,6 @@ export default function Blog() {
           viewport={{ once: true, margin: "-20%" }}
           transition={{ duration: 0.8 }}
         >
-          {" "}
           <h2
             className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-3 sm:mb-4"
             style={{ color: "white" }}
@@ -80,115 +88,121 @@ export default function Blog() {
             className="text-base sm:text-lg md:text-xl max-w-xs sm:max-w-md md:max-w-2xl mx-auto px-4"
             style={{ color: "#BDC3C7" }}
           >
-            Stay updated with the latest trends and insights from our tech
-            experts
+            Stay updated with the latest trends and insights from our tech experts
           </p>
-        </motion.div>{" "}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
-          {blogPosts.slice(0, 3).map((post, index) => (
-            <motion.article
-              key={post.id}
-              className="group cursor-pointer"
-              initial={{ opacity: 0, y: 30 }}
+        </motion.div>
+        
+        {/* Loading State */}
+        {loading ? (
+          <LoadingComponent />
+        ) : (
+          <>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
+              {blogPosts.slice(0, 3).map((post, index) => (
+                <motion.article
+                  key={post.id}
+                  className="group cursor-pointer"
+                  initial={{ opacity: 0, y: 30 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.6, delay: index * 0.1 }}
+                  whileHover={{ y: -10 }}
+                >
+                  <div
+                    className="rounded-2xl overflow-hidden transition-all duration-300 h-full"
+                    style={{
+                      backgroundColor: "#2E2E2E",
+                      borderColor: "#BDC3C7",
+                    }}
+                  >
+                    <div className="relative aspect-video overflow-hidden">
+                      <Image
+                        src={post.image}
+                        alt={post.title}
+                        fill
+                        className="object-cover"
+                      />
+                      <div
+                        className="absolute inset-0 opacity-60"
+                        style={{
+                          background:
+                            "linear-gradient(to top, #1C1C1C, transparent, transparent)",
+                        }}
+                      />
+                      <div className="absolute top-4 left-4">
+                        <span
+                          className="px-3 py-1 text-xs font-medium rounded-full"
+                          style={{
+                            backgroundColor: "#ff3131",
+                            color: "white",
+                          }}
+                        >
+                          {post.category}
+                        </span>
+                      </div>
+                    </div>
+                    <div className="p-6 flex flex-col">
+                      <div className="flex-1">
+                        <div
+                          className="flex items-center text-sm mb-4"
+                          style={{ color: "#BDC3C7" }}
+                        >
+                          <User className="w-4 h-4 mr-2" />
+                          <span className="mr-4">{post.author}</span>
+                          <Calendar className="w-4 h-4 mr-2" />
+                          <span className="mr-4">
+                            {new Date(post.date).toLocaleDateString()}
+                          </span>
+                          <span>{post.read_time}</span>
+                        </div>
+                        <h3
+                          className="text-xl font-bold mb-3 transition-all duration-300"
+                          style={{ color: "white" }}
+                        >
+                          {post.title}
+                        </h3>
+                        <p
+                          className="mb-6 leading-relaxed"
+                          style={{ color: "#BDC3C7" }}
+                        >
+                          {post.excerpt}
+                        </p>
+                      </div>
+                      <div
+                        className="flex items-center transition-colors duration-300 mt-auto cursor-pointer"
+                        style={{ color: "#ff3131" }}
+                        onClick={() => setSelectedBlog(post)}
+                      >
+                        <span className="font-medium">Read More</span>
+                        <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
+                      </div>
+                    </div>
+                  </div>
+                </motion.article>
+              ))}
+            </div>
+            
+            <motion.div
+              className="text-center mt-12"
+              initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ duration: 0.6, delay: index * 0.1 }}
-              whileHover={{ y: -10 }}
+              transition={{ duration: 0.6, delay: 0.3 }}
             >
-              {" "}
-              <div
-                className="rounded-2xl overflow-hidden  transition-all duration-300 h-full"
+              <button
+                className="px-8 py-4 font-semibold rounded-full transition-all duration-300 hover:shadow-lg"
                 style={{
-                  backgroundColor: "#2E2E2E",
-                  borderColor: "#BDC3C7",
+                  backgroundColor: "#a93226",
+                  color: "white",
+                  boxShadow: "0 10px 25px rgba(169, 50, 38, 0.15)",
                 }}
+                onClick={() => router.push('/blogs')}
               >
-                <div className="relative aspect-video overflow-hidden">
-                  <Image
-                    src={post.image}
-                    alt={post.title}
-                    fill
-                    className="object-cover"
-                  />
-                  <div
-                    className="absolute inset-0 opacity-60"
-                    style={{
-                      background:
-                        "linear-gradient(to top, #1C1C1C, transparent, transparent)",
-                    }}
-                  />
-                  <div className="absolute top-4 left-4">
-                    <span
-                      className="px-3 py-1 text-xs font-medium rounded-full"
-                      style={{
-                        backgroundColor: "#ff3131",
-                        color: "white",
-                      }}
-                    >
-                      {post.category}
-                    </span>
-                  </div>
-                </div>{" "}
-                <div className="p-6 flex flex-col ">
-                  <div className="flex-1">
-                    <div
-                      className="flex items-center text-sm mb-4"
-                      style={{ color: "#BDC3C7" }}
-                    >
-                      <User className="w-4 h-4 mr-2" />
-                      <span className="mr-4">{post.author}</span>
-                      <Calendar className="w-4 h-4 mr-2" />
-                      <span className="mr-4">
-                        {new Date(post.date).toLocaleDateString()}
-                      </span>
-                      <span>{post.read_time}</span>
-                    </div>
-                    <h3
-                      className="text-xl font-bold mb-3 transition-all duration-300"
-                      style={{ color: "white" }}
-                    >
-                      {post.title}
-                    </h3>
-                    <p
-                      className="mb-6 leading-relaxed"
-                      style={{ color: "#BDC3C7" }}
-                    >
-                      {post.excerpt}
-                    </p>
-                  </div>
-                  <div
-                    className="flex items-center transition-colors duration-300 mt-auto cursor-pointer"
-                    style={{ color: "#ff3131" }}
-                    onClick={() => setSelectedBlog(post)}
-                  >
-                    <span className="font-medium">Read More</span>
-                    <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
-                  </div>
-                </div>
-              </div>
-            </motion.article>
-          ))}
-        </div>{" "}
-        <motion.div
-          className="text-center mt-12"
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6, delay: 0.3 }}
-        >
-          {" "}
-          <button
-            className="px-8 py-4 font-semibold rounded-full transition-all duration-300 hover:shadow-lg"
-            style={{
-              backgroundColor: "#a93226",
-              color: "white",
-              boxShadow: "0 10px 25px rgba(169, 50, 38, 0.15)",
-            }}
-            onClick={() => router.push('/blogs')}
-          >
-            See More
-          </button>
-        </motion.div>
+                See More
+              </button>
+            </motion.div>
+          </>
+        )}
       </div>
 
       {/* Blog Detail Modal */}
@@ -239,7 +253,6 @@ export default function Blog() {
                     {selectedBlog.excerpt}
                   </p>
                   
-                  {/* Placeholder for full content - you can replace this with actual blog content */}
                   <div className="text-gray-700 leading-relaxed space-y-4">
                     <p>
                       This is where the full blog content would appear. You can fetch the complete content 
