@@ -1,4 +1,22 @@
 import { supabase } from "@/lib/supabase";
+import { ApiResponse } from "@/lib/cache-utils";
+
+interface ProjectRow {
+    client: string;
+}
+
+interface ProjectStatusRow {
+    status: 'in-progress' | 'completed' | 'planning' | string;
+}
+
+interface SupabaseError {
+    message: string;
+}
+
+interface SupabaseQueryResult<T> {
+    data?: T;
+    error?: SupabaseError;
+}
 
 export const GET = async () => {
     try {
@@ -12,12 +30,16 @@ export const GET = async () => {
                 console.log('Dashboard API: Supabase connected successfully');
             }
         } catch (error) {
-            console.warn('Dashboard API: Supabase connection failed, using fallback data:', error.message);
+            const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+            console.warn('Dashboard API: Supabase connection failed, using fallback data:', errorMessage);
             supabaseConnected = false;
         }
         
         // Helper function to safely execute Supabase query with fallback
-        const safeSupabaseQuery = async (queryFn, fallbackValue = 0) => {
+        const safeSupabaseQuery = async <T>(
+            queryFn: () => Promise<SupabaseQueryResult<T>>, 
+            fallbackValue: T
+        ): Promise<T> => {
             if (!supabaseConnected) {
                 return Array.isArray(fallbackValue) ? fallbackValue : fallbackValue;
             }
@@ -26,12 +48,13 @@ export const GET = async () => {
                 const result = await queryFn();
                 if (result.error) {
                     console.warn('Supabase query failed:', result.error.message);
-                    return Array.isArray(fallbackValue) ? fallbackValue : fallbackValue;
+                    return fallbackValue;
                 }
-                return result.data;
+                return result.data || fallbackValue;
             } catch (error) {
-                console.warn('Supabase query exception:', error.message);
-                return Array.isArray(fallbackValue) ? fallbackValue : fallbackValue;
+                const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+                console.warn('Supabase query exception:', errorMessage);
+                return fallbackValue;
             }
         };
         
@@ -42,8 +65,9 @@ export const GET = async () => {
                 .select('client', { count: 'exact' });
             if (error) return { error };
             
-            // Get unique clients
-            const uniqueClients = [...new Set(data.map(row => row.client))];
+            // Get unique clients - type assertion for Supabase data
+            const projectRows = data as ProjectRow[];
+            const uniqueClients = Array.from(new Set(projectRows.map(row => row.client)));
             return { data: uniqueClients.length };
         }, 15);
         
@@ -56,10 +80,12 @@ export const GET = async () => {
                 .select('status');
             if (error) return { error };
             
-            const total = data.length;
-            const inProgress = data.filter(p => p.status === 'in-progress').length;
-            const completed = data.filter(p => p.status === 'completed').length;
-            const planning = data.filter(p => p.status === 'planning').length;
+            // Type assertion for Supabase data
+            const statusRows = data as ProjectStatusRow[];
+            const total = statusRows.length;
+            const inProgress = statusRows.filter(p => p.status === 'in-progress').length;
+            const completed = statusRows.filter(p => p.status === 'completed').length;
+            const planning = statusRows.filter(p => p.status === 'planning').length;
             
             return { 
                 data: {
@@ -136,24 +162,23 @@ export const GET = async () => {
         // Calculate stats with safe defaults
         const stats = {
             projects: {
-                total: projectsData?.count || 5,
-                inProgress: projectsData?.in_progress_count || 2,
-                completed: projectsData?.completed_count || 2,
-                planning: projectsData?.planning_count || 1
+                total: projectsData?.count || 0,
+                inProgress: projectsData?.in_progress_count || 0,
+                completed: projectsData?.completed_count || 0,
+                planning: projectsData?.planning_count || 0
             },
-            blogPosts: blogPostsData || 12,
-            services: servicesData || 8,
-            team: teamData || 6,
-            testimonials: testimonialsData || 15
+            blogPosts: blogPostsData || 0,
+            services: servicesData || 0,
+            team: teamData || 0,
+            testimonials: testimonialsData || 0
         };
         
         // Combine and sort recent activities with safe mapping
         const now = new Date();
-        let timeOffset = 0;
         
         // Generate realistic timestamps for each type of activity
-        const generateTimestamp = (baseOffset) => {
-            return new Date(now - baseOffset * 60 * 60 * 1000); // Convert hours to milliseconds
+        const generateTimestamp = (baseOffset: number): Date => {
+            return new Date(now.getTime() - baseOffset * 60 * 60 * 1000); // Convert hours to milliseconds
         };
         
         const recentActivity = [
@@ -181,7 +206,7 @@ export const GET = async () => {
                 time: generateTimestamp(6 + index * 12), // Start from 6 hours ago, 12 hours apart
                 type: "team_member"
             }))
-        ].sort((a, b) => new Date(b.time) - new Date(a.time)).slice(0, 8);
+        ].sort((a, b) => new Date(b.time).getTime() - new Date(a.time).getTime()).slice(0, 8);
         
         // Calculate percentages for project performance based on actual status counts
         const totalProjects = stats.projects.total || 1; // Avoid division by zero
@@ -205,7 +230,7 @@ export const GET = async () => {
                 // Calculate relative time
                 const now = new Date();
                 const activityTime = new Date(activity.time);
-                const diffInHours = Math.floor((now - activityTime) / (1000 * 60 * 60));
+                const diffInHours = Math.floor((now.getTime() - activityTime.getTime()) / (1000 * 60 * 60));
                 
                 let timeDisplay;
                 if (diffInHours < 1) {
@@ -224,27 +249,14 @@ export const GET = async () => {
             })
         };
         
-        return new Response(JSON.stringify(dashboardData), {
-            status: 200,
-            headers: {
-                "Content-Type": "application/json",
-                "Cache-Control": "no-store, no-cache, must-revalidate, max-age=0",
-                "Pragma": "no-cache",
-                "Expires": "0"
-            },
-        });
+        return ApiResponse.success(dashboardData);
         
     } catch (error) {
         console.error("Dashboard API error:", error);
-        return new Response(JSON.stringify({ 
+        const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+        return ApiResponse.error(JSON.stringify({ 
             error: "Failed to fetch dashboard data",
-            details: error.message 
-        }), { 
-            status: 500,
-            headers: {
-                "Content-Type": "application/json",
-                "Cache-Control": "no-store, no-cache, must-revalidate, max-age=0"
-            }
-        });
+            details: errorMessage 
+        }));
     }
 };

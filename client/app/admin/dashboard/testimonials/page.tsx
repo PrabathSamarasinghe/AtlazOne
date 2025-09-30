@@ -41,7 +41,13 @@ export default function TestimonialsPage() {
   const fetchTestimonials = async () => {
     try {
       setIsLoading(true);
-      const response = await fetchWithNoCache('/api/testimonials');
+      const response = await fetchWithNoCache('/api/testimonials', {
+        method: 'GET',
+        cache: 'no-store',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
 
       if (!response.ok) {
         throw new Error(`Failed to fetch: ${response.status}`);

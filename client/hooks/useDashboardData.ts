@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { fetchWithNoCache } from '@/lib/cache-utils';
 
 interface DashboardStats {
-  teamMembers: any;
+  teamMembers: number;
   activeProjects: number;
   totalClients: number;
   revenue: string;

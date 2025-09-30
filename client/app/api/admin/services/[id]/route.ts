@@ -1,7 +1,7 @@
 
 import { supabase } from "@/lib/supabase";
 
-export const GET = async (request, { params }) => {
+export const GET = async (request: Request, { params }: { params: { id: string } }) => {
     try{
         const { data, error } = await supabase
             .from("services")
@@ -27,7 +27,7 @@ export const GET = async (request, { params }) => {
     }
 }
 
-export const PATCH = async (request, { params }) => {
+export const PATCH = async (request: Request, { params }: { params: { id: string } }) => {
     try {
         const fieldsToUpdate = await request.json();
 
@@ -61,7 +61,7 @@ export const PATCH = async (request, { params }) => {
     }
 }
 
-export const DELETE = async (request, { params }) => {
+export const DELETE = async (request: Request, { params }: { params: { id: string } }) => {
     try {
         const { data, error } = await supabase
             .from("services")

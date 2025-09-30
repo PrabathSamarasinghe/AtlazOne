@@ -1,6 +1,6 @@
 import { supabase } from "@/lib/supabase";
 
-export const DELETE = async (request, { params }) => {
+export const DELETE = async (request: Request, { params }: { params: { id: string } }) => {
     try {
         const { id } = params ? params : await request.json();
         
@@ -11,7 +11,7 @@ export const DELETE = async (request, { params }) => {
             return new Response("Team member ID is required", { status: 400 });
         }
         
-        const { data, error } = await supabase
+        const { error } = await supabase
             .from("team")
             .delete()
             .eq("id", id)
@@ -37,7 +37,7 @@ export const DELETE = async (request, { params }) => {
 }
 
 
-export const PATCH = async (request, { params }) => {
+export const PATCH = async (request: Request, { params }: { params: { id: string } }) => {
     try {
         const { id } = params;
         const { name, role, image, bio, social } = await request.json();
