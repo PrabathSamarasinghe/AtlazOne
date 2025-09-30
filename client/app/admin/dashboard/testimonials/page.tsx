@@ -15,7 +15,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import TestimonialsModal from "@/components/admin/TestimonialsModal";
 import Image from "next/image";
-import { fetchWithNoCache } from "@/lib/cache-utils";
+import { getDirectTestimonials } from "@/lib/direct-queries";
 
 interface Testimonial {
   id: number;
@@ -41,20 +41,9 @@ export default function TestimonialsPage() {
   const fetchTestimonials = async () => {
     try {
       setIsLoading(true);
-      const response = await fetchWithNoCache('/api/testimonials', {
-        method: 'GET',
-        cache: 'no-store',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-
-      if (!response.ok) {
-        throw new Error(`Failed to fetch: ${response.status}`);
-      }
-
-      const data = await response.json();
+      const data = await getDirectTestimonials();
       setTestimonials(data);
+      console.log('Admin testimonials fetched directly from database:', data.length);
     } catch (error) {
       console.error("Error fetching testimonials:", error);
       // Optionally show user-friendly error message

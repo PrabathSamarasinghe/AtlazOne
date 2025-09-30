@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import { ExternalLink, Github, ChevronLeft, ChevronRight } from "lucide-react";
 import Image from "next/image";
 import { useState, useEffect } from "react";
-import { fetchWithNoCache } from "@/lib/cache-utils";
+import { getDirectProjects } from "@/lib/direct-queries";
 
 interface Project {
   id: number;
@@ -21,6 +21,7 @@ export default function Portfolio() {
   const [projects, setProjects] = useState<Project[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [itemsPerView, setItemsPerView] = useState(1);
+  const [loading, setLoading] = useState(true);
 
   // Determine items per view based on screen size
   useEffect(() => {
@@ -42,12 +43,14 @@ export default function Portfolio() {
   useEffect(() => {
     const fetchProjects = async () => {
       try {
-        const response = await fetchWithNoCache("/api/projects");
-        if (!response.ok) throw new Error('Failed to fetch projects');
-        const data = await response.json();
+        setLoading(true);
+        const data = await getDirectProjects();
         setProjects(data);
+        console.log('Projects fetched directly from database:', data.length);
       } catch (error) {
         console.error("Error fetching projects:", error);
+      } finally {
+        setLoading(false);
       }
     };
 

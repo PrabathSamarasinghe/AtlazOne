@@ -15,6 +15,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import ProjectModal from '@/components/admin/ProjectModal';
+import { getDirectProjects } from '@/lib/direct-queries';
 
 interface Project {
   id: number;
@@ -82,15 +83,10 @@ export default function ProjectsPage() {
 
   const fetchProjects = async () => {
     try {
-      const response = await fetch('/api/projects',{
-        method: 'GET',
-        cache: 'no-store',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-      const data = await response.json();
-      // Transform data to match our interface
+      setLoading(true);
+      const data = await getDirectProjects();
+      
+      // Transform data to match our interface if needed
       interface RawProject {
         id: number;
         title: string;
@@ -113,6 +109,7 @@ export default function ProjectsPage() {
         end_date: project.end_date
       }));
       setProjects(transformedProjects);
+      console.log('Admin projects fetched directly from database:', transformedProjects.length);
     } catch (error) {
       console.error('Failed to fetch projects:', error);
     } finally {

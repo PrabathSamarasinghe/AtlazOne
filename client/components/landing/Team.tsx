@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import { Github, Linkedin, Twitter } from "lucide-react";
 import Image from "next/image";
 import { useEffect, useState } from "react";
-import { fetchWithNoCache } from "@/lib/cache-utils";
+import { getDirectTeamMembers } from "@/lib/direct-queries";
 
 interface TeamMember {
   id: number;
@@ -21,18 +21,27 @@ interface TeamMember {
 
 export default function Team() {
   const [team, setTeam] = useState<TeamMember[]>([]);
+  const [loading, setLoading] = useState(true);
+  
   useEffect(() => {
     const fetchTeamData = async () => {
       try {
-        const response = await fetchWithNoCache("/api/team");
-        if (!response.ok) throw new Error('Failed to fetch team data');
-        const data = await response.json();
+        setLoading(true);
+        const data = await getDirectTeamMembers();
         setTeam(data);
+        console.log('Team data fetched directly from database:', data.length);
       } catch (error) {
         console.error("Error fetching team data:", error);
+      } finally {
+        setLoading(false);
       }
     };
+    
     fetchTeamData();
+
+    return () => {
+      setTeam([]);
+    };
   }, []);
   return (    <motion.section
       className="py-24"

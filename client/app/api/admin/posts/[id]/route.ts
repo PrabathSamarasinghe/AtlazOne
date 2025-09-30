@@ -57,12 +57,11 @@ export const PATCH = async (request: Request, { params }: { params: { id: string
 };
 
 export const DELETE = async (request: Request, { params }: { params: { id: string } }) => {
-  const { id } = await request.json();
   try {
     const { data, error } = await supabase
       .from("blog_posts")
       .delete()
-      .eq("id", params.id || id)
+      .eq("id", params.id)
       .select()
       .single();
 

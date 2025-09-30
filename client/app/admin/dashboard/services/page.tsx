@@ -18,7 +18,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import ServiceModal from "@/components/admin/ServiceModal";
-import { captureRejectionSymbol } from "node:events";
+import { getDirectServices } from "@/lib/direct-queries";
 
 interface Service {
   id: number;
@@ -47,15 +47,9 @@ export default function ServicesPage() {
   useEffect(() => {
     const fetchServices = async () => {
       try {
-        const response = await fetch("/api/services",{
-          method: "GET",
-          cache: "no-store",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        });
-        const data = await response.json();
+        const data = await getDirectServices();
         setServices(data);
+        console.log('Admin services fetched directly from database:', data.length);
       } catch (error) {
         console.log("Error fetching services:", error);
       }

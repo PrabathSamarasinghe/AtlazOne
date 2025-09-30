@@ -4,7 +4,7 @@ import { Calendar, ArrowRight, User } from "lucide-react";
 import Image from "next/image";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { fetchWithNoCache } from "@/lib/cache-utils";
+import { getDirectBlogPosts } from "@/lib/direct-queries";
 
 interface BlogPost {
   id: number;
@@ -20,26 +20,40 @@ interface BlogPost {
 export default function Blog() {
   const [blogPosts, setBlogPosts] = useState<BlogPost[]>([]);
   const [selectedBlog, setSelectedBlog] = useState<BlogPost | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [mounted, setMounted] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (!mounted) return;
+    
     const fetchBlogPosts = async () => {
       try {
-        const response = await fetchWithNoCache("/api/blogposts");
-        if (!response.ok) throw new Error('Failed to fetch blog posts');
-        const data = await response.json();
+        setLoading(true);
+        const data = await getDirectBlogPosts();
         setBlogPosts(data);
+        console.log('Blog posts fetched directly from database:', data.length);
       } catch (error) {
         console.error('Error fetching blog posts:', error);
+      } finally {
+        setLoading(false);
       }
     };
 
     fetchBlogPosts();
 
+    // Optional: Set up real-time updates (comment out to disable)
+    // const subscription = subscribeToTableChanges('blog_posts', fetchBlogPosts);
+
     return () => {
       setBlogPosts([]);
+      // unsubscribeFromChanges(subscription);
     };
-  }, []);
+  }, [mounted]);
 
   return (
     <section

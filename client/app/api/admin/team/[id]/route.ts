@@ -2,7 +2,7 @@ import { supabase } from "@/lib/supabase";
 
 export const DELETE = async (request: Request, { params }: { params: { id: string } }) => {
     try {
-        const { id } = params ? params : await request.json();
+        const { id } = params;
         
         console.log("Deleting team member with ID:", id);
         

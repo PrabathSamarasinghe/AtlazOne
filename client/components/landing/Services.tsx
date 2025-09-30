@@ -3,7 +3,7 @@
 import { motion } from "framer-motion";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { fetchWithNoCache } from "@/lib/cache-utils";
+import { getDirectServices } from "@/lib/direct-queries";
 
 import { type LucideIcon } from "lucide-react";
 
@@ -30,17 +30,20 @@ const getLucideIcon = (iconName: keyof typeof icons): LucideIcon | null => {
 
 export default function Services() {
   const [services, setServices] = useState<Service[]>([]);
+  const [loading, setLoading] = useState(true);
   const router = useRouter();
 
   useEffect(() => {
     const fetchServices = async () => {
       try {
-        const response = await fetchWithNoCache("/api/services");
-        if (!response.ok) throw new Error('Failed to fetch services');
-        const data = await response.json();
+        setLoading(true);
+        const data = await getDirectServices();
         setServices(data);
+        console.log('Services fetched directly from database:', data.length);
       } catch (error) {
         console.error("Error fetching services:", error);
+      } finally {
+        setLoading(false);
       }
     };
 

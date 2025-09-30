@@ -1,15 +1,16 @@
 import { supabase } from "@/lib/supabase";
+import { ApiResponse } from "@/lib/cache-utils";
 
-export const POST = async (request) => {
+export const POST = async (request: Request) => {
     try {
         const { name, role, image, content, rating } = await request.json();
         
         if (!name || !role || !content || !rating) {
-            return new Response("Name, role, content, and rating are required", { status: 400 });
+            return ApiResponse.error("Name, role, content, and rating are required", 400);
         }
 
         if (rating < 1 || rating > 5) {
-            return new Response("Rating must be between 1 and 5", { status: 400 });
+            return ApiResponse.error("Rating must be between 1 and 5", 400);
         }
         
         const { data, error } = await supabase
@@ -28,20 +29,9 @@ export const POST = async (request) => {
             throw error;
         }
         
-        return new Response(JSON.stringify(data), {
-            status: 201,
-            headers: {
-                "Content-Type": "application/json",
-                "Cache-Control": "no-store, no-cache, must-revalidate, max-age=0"
-            },
-        });
+        return ApiResponse.success(data, 201);
     } catch (error) {
         console.error("Error creating testimonial:", error);
-        return new Response("Failed to create testimonial", { 
-            status: 500,
-            headers: {
-                "Cache-Control": "no-store, no-cache, must-revalidate, max-age=0"
-            }
-        });
+        return ApiResponse.error("Failed to create testimonial");
     }
 }

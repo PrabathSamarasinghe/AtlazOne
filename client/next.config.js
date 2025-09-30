@@ -4,11 +4,20 @@ const nextConfig = {
     ignoreDuringBuilds: true,
   },
   images: { unoptimized: true },
-  experimental: {
-    staleTimes: {
-      dynamic: 0,
-      static: 0,
-    },
+  webpack: (config, { isServer }) => {
+    // Suppress the warning for @supabase/realtime-js
+    config.module = {
+      ...config.module,
+      exprContextCritical: false,
+    };
+    
+    // Ignore specific warnings
+    config.ignoreWarnings = [
+      { module: /node_modules\/@supabase\/realtime-js/ },
+      /Critical dependency: the request of a dependency is an expression/,
+    ];
+    
+    return config;
   },
   // Disable caching in production for API routes
   async headers() {

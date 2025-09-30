@@ -10,11 +10,6 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
   auth: {
     persistSession: false,
   },
-  realtime: {
-    params: {
-      eventsPerSecond: 2
-    }
-  },
   global: {
     headers: {
       'Cache-Control': 'no-cache, no-store, must-revalidate',

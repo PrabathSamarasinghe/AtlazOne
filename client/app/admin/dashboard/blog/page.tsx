@@ -16,6 +16,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import BlogModal from "@/components/admin/BlogModal";
 import BlogViewModal from "@/components/admin/BlogViewModal";
+import { getDirectBlogPosts } from "@/lib/direct-queries";
 
 interface BlogPost {
   id: number;
@@ -79,15 +80,9 @@ export default function BlogPage() {
   useEffect(() => {
     const fetchPosts = async () => {
       try {
-        const response = await fetch("/api/blogposts",{
-          method: "GET",
-          cache: "no-store",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        });
-        const data = await response.json();
+        const data = await getDirectBlogPosts();
         setPosts(data);
+        console.log('Admin blog posts fetched directly from database:', data.length);
       } catch (error) {
         console.error("Error fetching blog posts:", error);
       }

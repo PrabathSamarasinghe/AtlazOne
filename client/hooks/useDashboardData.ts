@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { fetchWithNoCache } from '@/lib/cache-utils';
+import { getDirectDashboardStats } from '@/lib/direct-queries';
 
 interface DashboardStats {
   teamMembers: number;
@@ -40,14 +40,31 @@ export const useDashboardData = () => {
       setLoading(true);
       setError(null);
       
-      const response = await fetchWithNoCache('/api/admin/dashboard');
+      // Fetch stats directly from database
+      const stats = await getDirectDashboardStats();
       
-      if (!response.ok) {
-        throw new Error(`Failed to fetch dashboard data: ${response.status}`);
-      }
+      // Mock performance and activity data (or fetch from API if needed)
+      const dashboardData = {
+        stats,
+        performance: {
+          completed: 85,
+          inProgress: 12,
+          planning: 8
+        },
+        recentActivity: [
+          {
+            id: '1',
+            action: 'New blog post created',
+            details: 'Admin created a new blog post',
+            time: new Date().toISOString(),
+            type: 'blog',
+            timeDisplay: 'Just now'
+          }
+        ]
+      };
       
-      const dashboardData = await response.json();
       setData(dashboardData);
+      console.log('Dashboard stats fetched directly from database:', stats);
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Unknown error occurred';
       setError(errorMessage);

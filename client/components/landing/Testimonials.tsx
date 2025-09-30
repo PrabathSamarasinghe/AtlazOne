@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import { Star, Quote } from "lucide-react";
 import { useState, useEffect } from "react";
 import Image from "next/image";
-import { fetchWithNoCache } from "@/lib/cache-utils";
+import { getDirectTestimonials } from "@/lib/direct-queries";
 
 interface Testimonial {
   id: number;
@@ -17,19 +17,27 @@ interface Testimonial {
 
 export default function Testimonials() {
   const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
+  const [loading, setLoading] = useState(true);
+  
   useEffect(() => {
     const fetchTestimonials = async () => {
       try {
-        const response = await fetchWithNoCache("/api/testimonials");
-        if (!response.ok) throw new Error('Failed to fetch testimonials');
-        console.log(response);
-        const data = await response.json();
+        setLoading(true);
+        const data = await getDirectTestimonials();
         setTestimonials(data);
+        console.log('Testimonials fetched directly from database:', data.length);
       } catch (error) {
         console.error("Error fetching testimonials:", error);
+      } finally {
+        setLoading(false);
       }
     };
+    
     fetchTestimonials();
+
+    return () => {
+      setTestimonials([]);
+    };
   }, []);
 
   const [currentIndex, setCurrentIndex] = useState(0);

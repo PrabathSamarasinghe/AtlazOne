@@ -15,6 +15,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import TeamModal from "@/components/admin/TeamModal";
 import Image from "next/image";
+import { getDirectTeamMembers } from "@/lib/direct-queries";
 
 interface TeamMember {
   id: number;
@@ -43,15 +44,9 @@ export default function TeamPage() {
   const fetchTeamMembers = async () => {
     try {
       setIsLoading(true);
-      const response = await fetch("/api/team",{
-        method: "GET",
-        cache: "no-store",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-      const data = await response.json();
+      const data = await getDirectTeamMembers();
       setTeam(data);
+      console.log('Admin team members fetched directly from database:', data.length);
     } catch (error) {
       console.error("Error fetching team members:", error);
     } finally {

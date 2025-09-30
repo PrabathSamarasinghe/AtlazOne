@@ -39,22 +39,37 @@ export const fetchWithNoCache = async (url: string, options: RequestInit = {}) =
  * Creates a Response with cache-busting headers
  */
 export const createNoCacheResponse = (data: unknown, status: number = 200) => {
-  return new Response(JSON.stringify(data), {
-    status,
-    headers: NO_CACHE_RESPONSE_HEADERS,
-  });
+  try {
+    const body = typeof data === 'string' ? data : JSON.stringify(data);
+    return new Response(body, {
+      status,
+      headers: new Headers(NO_CACHE_RESPONSE_HEADERS),
+    });
+  } catch (error) {
+    console.error('Error creating response:', error);
+    return new Response(JSON.stringify({ error: 'Internal server error' }), {
+      status: 500,
+      headers: new Headers(NO_CACHE_RESPONSE_HEADERS),
+    });
+  }
 };
 
 /**
  * Creates an error Response with cache-busting headers
  */
 export const createNoCacheErrorResponse = (message: string, status: number = 500) => {
-  return new Response(message, {
-    status,
-    headers: {
-      'Cache-Control': 'no-store, no-cache, must-revalidate, max-age=0'
-    },
-  });
+  try {
+    return new Response(JSON.stringify({ error: message }), {
+      status,
+      headers: new Headers({
+        'Content-Type': 'application/json',
+        'Cache-Control': 'no-store, no-cache, must-revalidate, max-age=0'
+      }),
+    });
+  } catch (error) {
+    console.error('Error creating error response:', error);
+    return new Response('Internal Server Error', { status: 500 });
+  }
 };
 
 /**
