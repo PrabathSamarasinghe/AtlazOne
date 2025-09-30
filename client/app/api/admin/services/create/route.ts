@@ -1,6 +1,6 @@
 import { supabase } from "@/lib/supabase";
 
-export const POST = async (request)=>{
+export const POST = async (request: Request)=>{
     try{
         const {icon, title, description, color, price, features, isactive} = await request.json();
 

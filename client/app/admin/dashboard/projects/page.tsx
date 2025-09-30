@@ -91,7 +91,22 @@ export default function ProjectsPage() {
       });
       const data = await response.json();
       // Transform data to match our interface
-      const transformedProjects = data.map((project: any) => ({
+      interface RawProject {
+        id: number;
+        title: string;
+        category: string;
+        status: 'completed' | 'in-progress' | 'planning';
+        client: string;
+        description: string;
+        tech: string | string[];
+        image: string;
+        start_date: string;
+        end_date: string;
+        link: string;
+        github: string;
+      }
+      
+      const transformedProjects = (data as RawProject[]).map((project) => ({
         ...project,
         tech: typeof project.tech === 'string' ? JSON.parse(project.tech) : project.tech,
         start_date: project.start_date,

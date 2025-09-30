@@ -38,7 +38,7 @@ export const fetchWithNoCache = async (url: string, options: RequestInit = {}) =
 /**
  * Creates a Response with cache-busting headers
  */
-export const createNoCacheResponse = (data: any, status: number = 200) => {
+export const createNoCacheResponse = (data: unknown, status: number = 200) => {
   return new Response(JSON.stringify(data), {
     status,
     headers: NO_CACHE_RESPONSE_HEADERS,
@@ -61,7 +61,7 @@ export const createNoCacheErrorResponse = (message: string, status: number = 500
  * Utility for handling API route responses with consistent cache headers
  */
 export class ApiResponse {
-  static success(data: any, status: number = 200) {
+  static success(data: unknown, status: number = 200) {
     return createNoCacheResponse(data, status);
   }
   

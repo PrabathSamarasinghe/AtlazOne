@@ -21,17 +21,35 @@ export default function Contact() {
     e.preventDefault();
     setIsSubmitting(true);
 
-    // Simulate form submission
-    await new Promise((resolve) => setTimeout(resolve, 2000));
+    try {
+      const response = await fetch('/api/contact', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
 
-    setIsSubmitting(false);
-    setIsSubmitted(true);
+      if (!response.ok) {
+        throw new Error(`Failed to send message: ${response.status}`);
+      }
 
-    // Reset form after success animation
-    setTimeout(() => {
-      setIsSubmitted(false);
-      setFormData({ name: "", email: "", company: "", message: "" });
-    }, 3000);
+      const result = await response.json();
+
+      setIsSubmitted(true);
+
+      // Reset form after success animation
+      setTimeout(() => {
+        setIsSubmitted(false);
+        setFormData({ name: "", email: "", company: "", message: "" });
+      }, 3000);
+
+    } catch (error) {
+      console.error('Error sending email:', error);
+      alert('Failed to send message. Please try again or contact us directly.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleChange = (
