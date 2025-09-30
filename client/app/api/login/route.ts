@@ -4,7 +4,7 @@ import bcrypt from 'bcryptjs';
 import { cookies } from "next/headers";
 import { supabase } from '@/lib/supabase';
 
-export const POST = async (request) => {
+export const POST = async (request: Request) => {
   try {
     const { email, password } = await request.json();
 
@@ -23,6 +23,9 @@ export const POST = async (request) => {
       return NextResponse.json({ error: 'Invalid password' }, { status: 401 });
     }
 
+    if (!process.env.JWT_SECRET) {
+      throw new Error('JWT_SECRET is not defined');
+    }
     const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, { expiresIn: '1h' });
 
     cookies().set({
