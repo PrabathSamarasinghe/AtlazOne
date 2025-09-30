@@ -73,3 +73,32 @@ export class ApiResponse {
     return createNoCacheErrorResponse(message, 404);
   }
 }
+
+/**
+ * Revalidates specific paths after data updates to ensure fresh data
+ */
+export const revalidatePaths = async (paths: string[]) => {
+  try {
+    const promises = paths.map(path => 
+      fetch(`/api/revalidate?path=${encodeURIComponent(path)}`, {
+        method: 'POST'
+      })
+    );
+    await Promise.all(promises);
+  } catch (error) {
+    console.error('Error revalidating paths:', error);
+  }
+};
+
+/**
+ * List of paths that commonly need revalidation after data changes
+ */
+export const COMMON_REVALIDATION_PATHS = [
+  '/',
+  '/admin/dashboard',
+  '/api/blogposts',
+  '/api/team',
+  '/api/services',
+  '/api/projects',
+  '/api/testimonials'
+] as const;

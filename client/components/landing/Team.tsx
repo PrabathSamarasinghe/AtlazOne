@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { Github, Linkedin, Twitter } from "lucide-react";
 import Image from "next/image";
 import { useEffect, useState } from "react";
+import { fetchWithNoCache } from "@/lib/cache-utils";
 
 interface TeamMember {
   id: number;
@@ -23,13 +24,8 @@ export default function Team() {
   useEffect(() => {
     const fetchTeamData = async () => {
       try {
-        const response = await fetch("/api/team",{
-          method: "GET",
-          cache: "no-store",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        });
+        const response = await fetchWithNoCache("/api/team");
+        if (!response.ok) throw new Error('Failed to fetch team data');
         const data = await response.json();
         setTeam(data);
       } catch (error) {

@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { ExternalLink, Github, ChevronLeft, ChevronRight } from "lucide-react";
 import Image from "next/image";
 import { useState, useEffect } from "react";
+import { fetchWithNoCache } from "@/lib/cache-utils";
 
 interface Project {
   id: number;
@@ -40,15 +41,14 @@ export default function Portfolio() {
 
   useEffect(() => {
     const fetchProjects = async () => {
-      const response = await fetch("/api/projects", {
-        method: "GET",
-        cache: "no-store",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-      const data = await response.json();
-      setProjects(data);
+      try {
+        const response = await fetchWithNoCache("/api/projects");
+        if (!response.ok) throw new Error('Failed to fetch projects');
+        const data = await response.json();
+        setProjects(data);
+      } catch (error) {
+        console.error("Error fetching projects:", error);
+      }
     };
 
     fetchProjects();

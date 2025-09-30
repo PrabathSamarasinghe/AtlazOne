@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { Star, Quote } from "lucide-react";
 import { useState, useEffect } from "react";
 import Image from "next/image";
+import { fetchWithNoCache } from "@/lib/cache-utils";
 
 interface Testimonial {
   id: number;
@@ -19,13 +20,8 @@ export default function Testimonials() {
   useEffect(() => {
     const fetchTestimonials = async () => {
       try {
-        const response = await fetch("/api/testimonials",{
-          method: "GET",
-          cache: "no-store",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        });
+        const response = await fetchWithNoCache("/api/testimonials");
+        if (!response.ok) throw new Error('Failed to fetch testimonials');
         console.log(response);
         const data = await response.json();
         setTestimonials(data);

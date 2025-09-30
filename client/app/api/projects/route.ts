@@ -1,4 +1,5 @@
 import { supabase } from "@/lib/supabase";
+import { ApiResponse } from "@/lib/cache-utils";
 
 export const GET = async () =>{
     try{
@@ -6,11 +7,9 @@ export const GET = async () =>{
 
         if (error) throw error;
 
-        return new Response(JSON.stringify(projects), {
-            headers: { "Content-Type": "application/json" },
-        });
+        return ApiResponse.success(projects);
     } catch (error){
         console.error("Error fetching projects:", error);
-        return new Response("Failed to fetch projects", { status: 500 });
+        return ApiResponse.error("Failed to fetch projects");
     }
 }

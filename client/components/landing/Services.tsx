@@ -3,6 +3,7 @@
 import { motion } from "framer-motion";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { fetchWithNoCache } from "@/lib/cache-utils";
 
 import { type LucideIcon } from "lucide-react";
 
@@ -33,15 +34,14 @@ export default function Services() {
 
   useEffect(() => {
     const fetchServices = async () => {
-      const response = await fetch("/api/services", {
-        method: "GET",
-        cache: "no-store",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-      const data = await response.json();
-      setServices(data);
+      try {
+        const response = await fetchWithNoCache("/api/services");
+        if (!response.ok) throw new Error('Failed to fetch services');
+        const data = await response.json();
+        setServices(data);
+      } catch (error) {
+        console.error("Error fetching services:", error);
+      }
     };
 
     fetchServices();

@@ -1,4 +1,5 @@
 import { supabase } from "@/lib/supabase";
+import { ApiResponse } from "@/lib/cache-utils";
 
 export const GET = async () => {
   try {
@@ -8,26 +9,9 @@ export const GET = async () => {
 
     if (error) throw error;
 
-    return new Response(JSON.stringify(testimonials), {
-      status: 200,
-      headers: {
-        "Content-Type": "application/json",
-        "Cache-Control":
-          "no-store, no-cache, must-revalidate, proxy-revalidate",
-        Pragma: "no-cache",
-        Expires: "0",
-      },
-    });
+    return ApiResponse.success(testimonials);
   } catch (error) {
     console.error("Database error:", error);
-    return new Response(
-      JSON.stringify({ error: "Failed to fetch testimonials" }),
-      {
-        status: 500,
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }
-    );
+    return ApiResponse.error("Failed to fetch testimonials");
   }
 };

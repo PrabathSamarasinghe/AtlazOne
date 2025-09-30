@@ -1,4 +1,5 @@
 import { supabase } from "@/lib/supabase";
+import { ApiResponse } from "@/lib/cache-utils";
 
 export const GET = async () => {
     try {
@@ -13,13 +14,9 @@ export const GET = async () => {
                 github: row.github
             }
         }));
-        return new Response(JSON.stringify(modifiedRows), {
-            headers: {
-                "Content-Type": "application/json",
-            }
-        });
+        return ApiResponse.success(modifiedRows);
     } catch (error) {
         console.error("Error fetching team members:", error);
-        return new Response("Failed to fetch team members", { status: 500 });
+        return ApiResponse.error("Failed to fetch team members");
     }
 };

@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import { Calendar, ArrowRight, User } from "lucide-react";
 import Image from "next/image";
 import { useState, useEffect } from "react";
+import { fetchWithNoCache } from "@/lib/cache-utils";
 
 interface BlogPost {
   id: number;
@@ -20,15 +21,14 @@ export default function Blog() {
 
   useEffect(() => {
     const fetchBlogPosts = async () => {
-      const response = await fetch("/api/blogposts", {
-        method: "GET",
-        cache: "no-store",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-      const data = await response.json();
-      setBlogPosts(data);
+      try {
+        const response = await fetchWithNoCache("/api/blogposts");
+        if (!response.ok) throw new Error('Failed to fetch blog posts');
+        const data = await response.json();
+        setBlogPosts(data);
+      } catch (error) {
+        console.error('Error fetching blog posts:', error);
+      }
     };
 
     fetchBlogPosts();
