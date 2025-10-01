@@ -152,7 +152,7 @@ export default function Contact() {
                     className="text-xs sm:text-sm"
                     style={{ color: "#2E2E2E" }}
                   >
-                    hello@innovatelab.com
+                    atlazone4@gmail.com
                   </p>
                 </div>
               </div>

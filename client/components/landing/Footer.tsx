@@ -80,7 +80,7 @@ export default function Footer() {
               <div className="flex items-center gap-3 justify-center sm:justify-start">
                 <Mail className="w-4 h-4 text-[#ff3131] flex-shrink-0" />
                 <span className="break-all sm:break-normal">
-                  contact@example.com
+                  atlazone4@gmail.com
                 </span>
               </div>
               <div className="flex items-center gap-3 justify-center sm:justify-start">
