@@ -39,7 +39,7 @@ export default function Hero() {
       </div>
       {/* Logo and Company Name - Top Left */}
       <motion.div
-        className="absolute top-4 sm:top-9 left-12 sm:left-16 md:left-20 lg:left-28 z-20 flex items-center gap-2 sm:gap-3"
+        className="absolute top-4 sm:top-9 left-4 sm:left-16 md:left-20 lg:left-28 z-20 flex items-center gap-2 sm:gap-3"
         initial={{ opacity: 0, x: -50 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ duration: 0.8, delay: 0.1 }}
@@ -54,11 +54,11 @@ export default function Hero() {
             alt="ATLAZONE"
             width={120}
             height={40}
-            className="h-6 sm:h-7 md:h-8 lg:h-9 w-auto"
+            className="h-5 sm:h-7 md:h-8 lg:h-9 w-auto"
           />
         </motion.div>
         <motion.h1
-          className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold tracking-tight"
+          className="text-base sm:text-xl md:text-2xl lg:text-3xl font-bold tracking-tight"
           initial={{ opacity: 0, x: 20 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.8, delay: 0.3 }}
@@ -72,7 +72,7 @@ export default function Hero() {
         className="relative z-10 min-h-screen flex items-center px-4 sm:px-6 lg:px-8"
         style={{ paddingTop: "8vh" }}
       >
-        <div className="w-full max-w-7xl ml-8 sm:ml-12 md:ml-16 lg:ml-20">
+        <div className="w-full max-w-7xl ml-4 sm:ml-12 md:ml-16 lg:ml-20">
           {/* Motto - Main Content */}
           <motion.div
             className="space-y-6 sm:space-y-8"
@@ -81,7 +81,7 @@ export default function Hero() {
             transition={{ duration: 1, delay: 0.5 }}
           >
             <motion.p
-              className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl leading-relaxed text-white  tracking-wide font-bold"
+              className="text-xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl leading-tight sm:leading-relaxed text-white tracking-wide font-bold"
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.7 }}
@@ -90,18 +90,18 @@ export default function Hero() {
             </motion.p>{" "}
             {/* Optional subtitle */}
             <motion.div
-              className="flex text-base sm:text-lg md:text-2xl text-white max-w-2xl  leading-relaxed font-semibold "
+              className="flex flex-col sm:flex-row text-sm sm:text-lg md:text-2xl text-white max-w-2xl leading-relaxed font-semibold space-y-2 sm:space-y-0"
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.9 }}
             >
-              <div className="pr-4">
+              <div className="sm:pr-4">
                 <span className="text-[#ff3131]">•</span> Data-Driven{" "}
               </div>
-              <div className="px-4">
+              <div className="sm:px-4">
                 <span className="text-[#ff3131]">•</span> User-Centered{" "}
               </div>
-              <div className="px-4">
+              <div className="sm:px-4">
                 <span className="text-[#ff3131]">•</span> Compliant
               </div>
             </motion.div>
