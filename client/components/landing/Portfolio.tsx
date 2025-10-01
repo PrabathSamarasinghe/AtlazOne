@@ -21,17 +21,16 @@ export default function Portfolio() {
   const [projects, setProjects] = useState<Project[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [itemsPerView, setItemsPerView] = useState(1);
-  const [loading, setLoading] = useState(true);
 
   // Determine items per view based on screen size
   useEffect(() => {
     const updateItemsPerView = () => {
       if (window.innerWidth >= 1024) {
-        setItemsPerView(3); // lg screens
+        setItemsPerView(3); // lg screens - exactly 3 cards
       } else if (window.innerWidth >= 640) {
-        setItemsPerView(2); // sm screens
+        setItemsPerView(2); // sm screens - exactly 2 cards
       } else {
-        setItemsPerView(1); // mobile
+        setItemsPerView(1); // mobile - exactly 1 card
       }
     };
 
@@ -43,14 +42,11 @@ export default function Portfolio() {
   useEffect(() => {
     const fetchProjects = async () => {
       try {
-        setLoading(true);
         const data = await getDirectProjects();
         setProjects(data);
-        console.log('Projects fetched directly from database:', data.length);
+        console.log("Projects fetched directly from database:", data.length);
       } catch (error) {
         console.error("Error fetching projects:", error);
-      } finally {
-        setLoading(false);
       }
     };
 
@@ -93,6 +89,7 @@ export default function Portfolio() {
     const maxIndex = Math.max(0, projects.length - itemsPerView);
     setCurrentIndex(Math.min(index, maxIndex));
   };
+
   return (
     <motion.section
       className="py-12 sm:py-16 md:py-20 lg:py-24"
@@ -103,7 +100,6 @@ export default function Portfolio() {
       transition={{ duration: 1.2, ease: [0.25, 0.46, 0.45, 0.94] }}
     >
       <div className="container mx-auto px-3 sm:px-4 md:px-6">
-        {" "}
         <motion.div
           className="text-center mb-8 sm:mb-12 md:mb-16"
           initial={{ opacity: 0, y: 40 }}
@@ -124,7 +120,8 @@ export default function Portfolio() {
             Showcasing innovative solutions that have transformed businesses
             worldwide
           </p>
-        </motion.div>{" "}
+        </motion.div>
+
         {/* Carousel Container */}
         <div className="relative max-w-7xl mx-auto">
           {/* Navigation Buttons */}
@@ -145,24 +142,23 @@ export default function Portfolio() {
                 <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6" />
               </button>
             </>
-          )}
-          {/* Carousel Content */}
-          <div className="overflow-hidden rounded-lg sm:rounded-xl mx-2 sm:mx-4 md:mx-6 lg:mx-8">
+          )}          {/* Carousel Content */}
+          <div className="overflow-hidden rounded-lg sm:rounded-xl mx-4 sm:mx-8 lg:mx-12">
             <motion.div
               className="flex transition-transform duration-500 ease-in-out"
               style={{
                 transform: `translateX(-${
                   (currentIndex * 100) / itemsPerView
                 }%)`,
-                width: `${(projects.length * 100) / itemsPerView}%`,
               }}
             >
-              {" "}
               {projects.map((project, index) => (
                 <div
                   key={project.id}
-                  className="flex-shrink-0 px-1 sm:px-2 md:px-3"
-                  style={{ width: `${100 / projects.length}%` }}
+                  className="flex-shrink-0 px-2 sm:px-3 lg:px-4"
+                  style={{
+                    width: `${100 / itemsPerView}%`,
+                  }}
                 >
                   <motion.div
                     className="group relative overflow-hidden rounded-xl sm:rounded-2xl transition-all duration-300 h-full"
@@ -269,12 +265,13 @@ export default function Portfolio() {
                 </div>
               ))}
             </motion.div>
-          </div>{" "}
+          </div>
+
           {/* Dots Indicator */}
           {projects.length > itemsPerView && (
             <div className="flex justify-center mt-6 sm:mt-8 gap-1.5 sm:gap-2">
               {Array.from({
-                length: Math.max(0, projects.length - itemsPerView + 1),
+                length: Math.ceil(projects.length - itemsPerView + 1),
               }).map((_, index) => (
                 <button
                   key={index}
