@@ -38,19 +38,17 @@ export const DELETE = async (request: Request, { params }: { params: { id: strin
 
 
 export const PATCH = async (request: Request, { params }: { params: { id: string } }) => {
-    try {
-        const { id } = params;
+    try {        const { id } = params;
         const { name, role, image, bio, social } = await request.json();
 
-        if (!id || !name || !role || !bio) {
-            return new Response("ID, name, role, and bio are required", { status: 400 });
+        if (!id || !name || !role) {
+            return new Response("ID, name, and role are required", { status: 400 });
         }
-        
-        const updateData = {
+          const updateData = {
             name, 
             role, 
             image: image || '', 
-            bio, 
+            bio: bio || '', 
             linkedin: social?.linkedin || '', 
             twitter: social?.twitter || '', 
             github: social?.github || ''

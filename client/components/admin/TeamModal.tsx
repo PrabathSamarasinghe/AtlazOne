@@ -105,10 +105,10 @@ export default function TeamModal({
       alert("Role is required");
       return;
     }
-    if (!formData.bio.trim()) {
-      alert("Bio is required");
-      return;
-    }
+    // if (!formData.bio.trim()) {
+    //   alert("Bio is required");
+    //   return;
+    // }
 
     onSave(formData);
   };
@@ -283,14 +283,14 @@ export default function TeamModal({
                         className="block text-sm font-medium mb-2"
                         style={{ color: "#94A3B8" }}
                       >
-                        Bio *
+                        Bio 
                       </label>
                       <Textarea
                         value={formData.bio}
                         onChange={(e) => handleChange("bio", e.target.value)}
                         placeholder="Write a brief bio about the team member..."
                         rows={4}
-                        required
+                        
                         style={{
                           backgroundColor: "#0A0A0B",
                           borderColor: "#374151",

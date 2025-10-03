@@ -63,9 +63,10 @@ const NavBar = () => {
   ) => {
     e.preventDefault();
 
-    // If we're on a service page, navigate to main page with section
+    // If we're on a service page, navigate to main page with section hash
     if (isServicePage) {
       setActiveSection(sectionId);
+      // Use just the hash to avoid full page refresh
       router.push(`/${sectionId}`);
       setIsMobileMenuOpen(false);
       return;
@@ -188,8 +189,7 @@ const NavBar = () => {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 1, ease: [0.25, 0.46, 0.45, 0.94] }}
       >
-        {" "}
-        <div className="flex gap-2 lg:gap-6 overflow-x-auto">
+        {" "}        <div className="flex gap-2 lg:gap-6 overflow-x-auto">
           {navItems.map((item, index) => (
             <a
               key={item.href}
@@ -278,8 +278,7 @@ const NavBar = () => {
                     Navigation
                   </h3>
                   <div className="grid grid-cols-1 gap-1">
-                    {" "}
-                    {navItems.map((item, index) => {
+                    {" "}                    {navItems.map((item, index) => {
                       const IconComponent = item.icon;
                       return (
                         <a
@@ -313,8 +312,7 @@ const NavBar = () => {
                               e.currentTarget.style.borderColor = "#2E2E2E";
                             }
                           }}
-                          aria-label={`Navigate to ${item.label} section`}
-                        >
+                          aria-label={`Navigate to ${item.label} section`}                        >
                           <IconComponent size={24} />
                           <span className="font-medium text-sm text-center">
                             {item.label}

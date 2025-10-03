@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import { ExternalLink, Github, ChevronLeft, ChevronRight } from "lucide-react";
 import Image from "next/image";
 import { useState, useEffect } from "react";
-import { getDirectProjects } from "@/lib/direct-queries";
+import { useProjects } from '@/contexts/DataCacheContext';
 
 interface Project {
   id: number;
@@ -21,7 +21,7 @@ interface Project {
 }
 
 export default function Portfolio() {
-  const [projects, setProjects] = useState<Project[]>([]);
+  const { projects, loading } = useProjects();
   const [currentIndex, setCurrentIndex] = useState(0);
   const [itemsPerView, setItemsPerView] = useState(1);
   // Determine items per view based on screen size
@@ -42,26 +42,9 @@ export default function Portfolio() {
 
     updateItemsPerView();
     window.addEventListener("resize", updateItemsPerView);
-    return () => window.removeEventListener("resize", updateItemsPerView);
-  }, []);
-
-  useEffect(() => {
-    const fetchProjects = async () => {
-      try {
-        const data = await getDirectProjects();
-        setProjects(data);
-        console.log("Projects fetched directly from database:", data.length);
-      } catch (error) {
-        console.error("Error fetching projects:", error);
-      }
-    };
-
-    fetchProjects();
-
-    return () => {
-      setProjects([]);
-    };
-  }, []);
+    return () => window.removeEventListener("resize", updateItemsPerView);  }, []);
+  
+  // Auto-scroll carousel
   useEffect(() => {
     if (projects.length === 0) return;
 
@@ -125,10 +108,54 @@ export default function Portfolio() {
           >
             Showcasing innovative solutions that have transformed businesses
             worldwide
-          </p>
-        </motion.div>
+          </p>        </motion.div>
+
+        {/* Loading Skeleton */}
+        {loading && (
+          <div className="relative max-w-7xl mx-auto">
+            <div className="overflow-hidden rounded-lg sm:rounded-xl mx-2 sm:mx-4 lg:mx-6">
+              <div className="flex gap-1 sm:gap-2 lg:gap-3">
+                {Array.from({ length: Math.floor(itemsPerView) || 1 }).map((_, index) => (
+                  <div
+                    key={index}
+                    className="flex-shrink-0 px-1 sm:px-2 lg:px-3 animate-pulse"
+                    style={{ width: `${100 / (Math.floor(itemsPerView) || 1)}%` }}
+                  >
+                    <div className="bg-gradient-to-br from-[#2E2E2E] to-[#1E1E1E] border border-[#3E3E3E] rounded-xl sm:rounded-2xl overflow-hidden h-full">
+                      {/* Image Skeleton */}
+                      <div className="aspect-[4/3] bg-[#3E3E3E]"></div>
+                      {/* Content Skeleton */}
+                      <div className="p-4 sm:p-5 md:p-6 space-y-4">
+                        {/* Challenge/Solution/Impact Skeleton */}
+                        <div className="space-y-3">
+                          {Array.from({ length: 3 }).map((_, i) => (
+                            <div key={i} className="bg-[#1C1C1C]/50 rounded-lg p-3">
+                              <div className="h-3 bg-[#3E3E3E] rounded mb-2 w-1/3"></div>
+                              <div className="h-2 bg-[#3E3E3E] rounded mb-1"></div>
+                              <div className="h-2 bg-[#3E3E3E] rounded w-4/5"></div>
+                            </div>
+                          ))}
+                        </div>
+                        {/* Tech Stack Skeleton */}
+                        <div className="pt-2 border-t border-[#3E3E3E]">
+                          <div className="h-3 bg-[#3E3E3E] rounded mb-2 w-1/4"></div>
+                          <div className="flex gap-2">
+                            {Array.from({ length: 3 }).map((_, i) => (
+                              <div key={i} className="h-6 bg-[#3E3E3E] rounded-full w-16"></div>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Carousel Container */}
+        {!loading && (
         <div className="relative max-w-7xl mx-auto">
           {" "}
           {/* Navigation Buttons */}
@@ -181,6 +208,7 @@ export default function Portfolio() {
                   {" "}
                   <motion.div
                     className="group relative overflow-hidden rounded-xl sm:rounded-2xl transition-all duration-500 h-full bg-gradient-to-br from-[#2E2E2E] to-[#1E1E1E] border border-[#3E3E3E] "
+                    data-project-card
                     initial={{ opacity: 0, y: 20 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true, margin: "-10%" }}
@@ -338,9 +366,9 @@ export default function Portfolio() {
                   }`}
                 />
               ))}
-            </div>
-          )}
+            </div>          )}
         </div>
+        )}
       </div>
     </motion.section>
   );
