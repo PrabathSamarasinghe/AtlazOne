@@ -30,7 +30,7 @@ export default function Footer() {
             </p>
             <div className="flex gap-4 justify-center sm:justify-start pt-2">
               <a
-                href="#"
+                href="https://www.linkedin.com/company/atlaz-one/?lipi=urn%3Ali%3Apage%3Ad_flagship3_search_srp_all%3BHBBC5gqNTby2GRDW5PkMqg%3D%3D"
                 className="text-[#f5f5f5] hover:text-[#ff3131] transition-colors duration-300 p-2 hover:bg-[#1a1a1a] rounded-lg"
               >
                 <Linkedin className="w-5 h-5" />
@@ -85,7 +85,7 @@ export default function Footer() {
               </div>
               <div className="flex items-center gap-3 justify-center sm:justify-start">
                 <Phone className="w-4 h-4 text-[#ff3131] flex-shrink-0" />
-                <span>+94 71 130 7990</span>
+                <span>+94 77 130 7990</span>
               </div>
               <div className="flex items-start gap-3 justify-center sm:justify-start">
                 <MapPin className="w-4 h-4 text-[#ff3131] mt-1 flex-shrink-0" />

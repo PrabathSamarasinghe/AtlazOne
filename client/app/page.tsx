@@ -7,12 +7,12 @@ import Blog from "@/components/landing/Blog";
 import Contact from "@/components/landing/Contact";
 import Footer from "@/components/landing/Footer";
 import NavBar from "@/components/landing/NavBar";
-import HashNavigator from "@/components/landing/HashNavigator";
+
 
 export default function Home() {
+  
   return (
-    <div className="min-h-screen bg-black overflow-x-hidden">
-      <HashNavigator />
+    <div className="min-h-screen bg-black">
       <NavBar />
       <section id="home">
         <Hero />

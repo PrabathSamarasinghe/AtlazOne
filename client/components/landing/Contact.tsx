@@ -177,7 +177,7 @@ export default function Contact() {
                     className="text-xs sm:text-sm"
                     style={{ color: "#2E2E2E" }}
                   >
-                    +94 71 130 7990
+                    +94 77 130 7990
                   </p>
                 </div>
               </div>
