@@ -2,10 +2,10 @@ import { supabase } from "@/lib/supabase";
 
 export const POST = async (request: Request) =>{
     try{
-        const {title, category, image, description, tech, link, github, status, client, start_date, end_date} = await request.json();
+        const {title, category, image, tech, link, github, status, client, start_date, end_date, challenge, solution, impact, industry} = await request.json();
         
         // Debug logging
-        console.log("Received data:", {title, category, image, description, tech, link, github, status, client, start_date, end_date});
+        console.log("Received data:", {title, category, image, tech, link, github, status, client, start_date, end_date, challenge, solution, impact, industry});
         console.log("Tech type:", typeof tech, "Tech value:", tech);
         
         // Handle empty date strings by converting them to null
@@ -25,14 +25,17 @@ export const POST = async (request: Request) =>{
                 title, 
                 category, 
                 image, 
-                description, 
                 tech, 
                 link, 
                 github, 
                 status, 
                 client, 
                 start_date: processedStartDate, 
-                end_date: processedEndDate
+                end_date: processedEndDate,
+                challenge,
+                solution,
+                impact,
+                industry
             }])
             .select()
             .single();
