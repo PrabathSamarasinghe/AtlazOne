@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import Image from "next/image";
+import { handleImageUpload } from "@/lib/coludinary";
 
 interface TeamMember {
   id: number;
@@ -64,6 +65,10 @@ export default function TeamModal({
   });
 
   const [previewMode, setPreviewMode] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
+  const [uploadError, setUploadError] = useState<string | null>(null);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string>("");
 
   useEffect(() => {
     if (member) {
@@ -78,6 +83,7 @@ export default function TeamModal({
           github: member.social.github || "",
         },
       });
+      setImagePreview(member.image);
     } else {
       setFormData({
         name: "",
@@ -90,12 +96,18 @@ export default function TeamModal({
           github: "",
         },
       });
+      setImagePreview("");
     }
+    
+    // Reset upload states when modal opens/closes
+    setIsUploading(false);
+    setUploadError(null);
+    setSelectedFile(null);
   }, [member, isOpen]);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     // Validate required fields
     if (!formData.name.trim()) {
       alert("Name is required");
@@ -110,7 +122,26 @@ export default function TeamModal({
       return;
     }
 
-    onSave(formData);
+    // Upload image if a new file was selected
+    if (selectedFile) {
+      setIsUploading(true);
+      setUploadError(null);
+      
+      try {
+        const uploadedUrl = await handleImageUpload(selectedFile);
+        const updatedFormData = { ...formData, image: uploadedUrl };
+        onSave(updatedFormData);
+      } catch (error) {
+        setUploadError(error instanceof Error ? error.message : 'Upload failed');
+        console.error('Upload error:', error);
+        setIsUploading(false);
+        return;
+      } finally {
+        setIsUploading(false);
+      }
+    } else {
+      onSave(formData);
+    }
   };
 
   const handleChange = (field: keyof typeof formData, value: any) => {
@@ -124,11 +155,47 @@ export default function TeamModal({
     }
   };
 
-  const handleSocialChange = (platform: keyof typeof formData.social, value: string) => {
+  const handleSocialChange = (
+    platform: keyof typeof formData.social,
+    value: string
+  ) => {
     setFormData((prev) => ({
       ...prev,
       social: { ...prev.social, [platform]: value },
     }));
+  };
+
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Validate file size (5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      setUploadError('File size must be less than 5MB');
+      return;
+    }
+
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+      setUploadError('Please select an image file');
+      return;
+    }
+
+    setSelectedFile(file);
+    setUploadError(null);
+
+    // Create preview
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setImagePreview(reader.result as string);
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const removeImage = () => {
+    setSelectedFile(null);
+    setImagePreview("");
+    handleChange("image", "");
   };
 
   return (
@@ -223,7 +290,9 @@ export default function TeamModal({
                         <div className="relative">
                           <Input
                             value={formData.role}
-                            onChange={(e) => handleChange("role", e.target.value)}
+                            onChange={(e) =>
+                              handleChange("role", e.target.value)
+                            }
                             placeholder="Enter role or select from suggestions"
                             required
                             list="role-options"
@@ -248,33 +317,98 @@ export default function TeamModal({
                         className="block text-sm font-medium mb-2"
                         style={{ color: "#94A3B8" }}
                       >
-                        Profile Image URL
+                        Profile Image
                       </label>
-                      <div className="flex items-center space-x-4">
-                        <Input
-                          value={formData.image}
-                          onChange={(e) => handleChange("image", e.target.value)}
-                          placeholder="https://example.com/profile.jpg"
-                          style={{
-                            backgroundColor: "#0A0A0B",
+                      
+                      {!imagePreview ? (
+                        <label
+                          htmlFor="image-upload"
+                          className="flex flex-col items-center justify-center w-full h-48 border-2 border-dashed rounded-2xl cursor-pointer transition-all hover:border-blue-500 hover:bg-gray-800/50"
+                          style={{ 
                             borderColor: "#374151",
-                            color: "#F8FAFC",
+                            backgroundColor: "#0A0A0B"
                           }}
-                        />
-                        {formData.image && (
-                          <div className="relative w-12 h-12 rounded-full overflow-hidden border-2 border-gray-600">
+                        >
+                          <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                            <div
+                              className="w-16 h-16 rounded-full flex items-center justify-center mb-4"
+                              style={{ backgroundColor: "#374151" }}
+                            >
+                              <Upload className="w-8 h-8" style={{ color: "#94A3B8" }} />
+                            </div>
+                            <p className="mb-2 text-sm" style={{ color: "#94A3B8" }}>
+                              <span className="font-semibold">Click to upload</span> or drag and drop
+                            </p>
+                            <p className="text-xs" style={{ color: "#6B7280" }}>
+                              PNG, JPG or GIF (MAX. 5MB)
+                            </p>
+                          </div>
+                          <input
+                            id="image-upload"
+                            type="file"
+                            className="hidden"
+                            accept="image/*"
+                            onChange={handleFileSelect}
+                            disabled={isUploading}
+                          />
+                        </label>
+                      ) : (
+                        <div className="relative">
+                          <div
+                            className="relative w-full h-64 rounded-2xl overflow-hidden border-2"
+                            style={{ borderColor: "#374151" }}
+                          >
                             <Image
-                              src={formData.image}
+                              src={imagePreview}
                               alt="Preview"
                               fill
                               className="object-cover"
                             />
                           </div>
-                        )}
-                      </div>
-                      <p className="text-xs mt-1" style={{ color: "#6B7280" }}>
-                        Provide a direct URL to the team member's profile image
-                      </p>
+                          <button
+                            type="button"
+                            onClick={removeImage}
+                            className="absolute top-2 right-2 w-8 h-8 rounded-full flex items-center justify-center transition-colors"
+                            style={{ 
+                              backgroundColor: "#1A1B23",
+                              color: "#F8FAFC"
+                            }}
+                          >
+                            <X className="w-4 h-4" />
+                          </button>
+                          <label
+                            htmlFor="image-upload-change"
+                            className="absolute bottom-2 right-2 px-4 py-2 rounded-lg text-sm font-medium cursor-pointer transition-colors"
+                            style={{
+                              backgroundColor: "#3B82F6",
+                              color: "#F8FAFC"
+                            }}
+                          >
+                            Change Image
+                          </label>
+                          <input
+                            id="image-upload-change"
+                            type="file"
+                            className="hidden"
+                            accept="image/*"
+                            onChange={handleFileSelect}
+                            disabled={isUploading}
+                          />
+                        </div>
+                      )}
+                      
+                      {uploadError && (
+                        <div className="text-red-400 text-sm mt-2">
+                          {uploadError}
+                        </div>
+                      )}
+                      
+                      {isUploading && (
+                        <div className="flex items-center space-x-2 mt-2">
+                          <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
+                          <span className="text-sm text-blue-400">Uploading image...</span>
+                        </div>
+                      )}
                     </div>
 
                     {/* Bio */}
@@ -298,7 +432,8 @@ export default function TeamModal({
                         }}
                       />
                       <p className="text-xs mt-1" style={{ color: "#6B7280" }}>
-                        Keep it concise and professional (recommended: 100-200 characters)
+                        Keep it concise and professional (recommended: 100-200
+                        characters)
                       </p>
                     </div>
 
@@ -316,7 +451,10 @@ export default function TeamModal({
                             className="w-10 h-10 rounded-full flex items-center justify-center"
                             style={{ backgroundColor: "#0A0A0B" }}
                           >
-                            <Linkedin className="w-5 h-5" style={{ color: "#0077B5" }} />
+                            <Linkedin
+                              className="w-5 h-5"
+                              style={{ color: "#0077B5" }}
+                            />
                           </div>
                           <Input
                             value={formData.social.linkedin}
@@ -337,7 +475,10 @@ export default function TeamModal({
                             className="w-10 h-10 rounded-full flex items-center justify-center"
                             style={{ backgroundColor: "#0A0A0B" }}
                           >
-                            <Twitter className="w-5 h-5" style={{ color: "#1DA1F2" }} />
+                            <Twitter
+                              className="w-5 h-5"
+                              style={{ color: "#1DA1F2" }}
+                            />
                           </div>
                           <Input
                             value={formData.social.twitter}
@@ -358,7 +499,10 @@ export default function TeamModal({
                             className="w-10 h-10 rounded-full flex items-center justify-center"
                             style={{ backgroundColor: "#0A0A0B" }}
                           >
-                            <Github className="w-5 h-5" style={{ color: "#F8FAFC" }} />
+                            <Github
+                              className="w-5 h-5"
+                              style={{ color: "#F8FAFC" }}
+                            />
                           </div>
                           <Input
                             value={formData.social.github}
@@ -377,7 +521,10 @@ export default function TeamModal({
                     </div>
 
                     {/* Actions */}
-                    <div className="flex justify-end space-x-3 pt-6 border-t" style={{ borderColor: "#374151" }}>
+                    <div
+                      className="flex justify-end space-x-3 pt-6 border-t"
+                      style={{ borderColor: "#374151" }}
+                    >
                       <Button
                         type="button"
                         onClick={onClose}
@@ -388,6 +535,7 @@ export default function TeamModal({
                       </Button>
                       <Button
                         type="submit"
+                        disabled={isUploading}
                         className="group"
                         style={{
                           backgroundColor: "#3B82F6",
@@ -396,20 +544,26 @@ export default function TeamModal({
                         }}
                       >
                         <Save className="w-4 h-4 mr-2 group-hover:scale-110 transition-transform" />
-                        {member ? "Update" : "Create"} Member
+                        {isUploading ? "Uploading..." : member ? "Update" : "Create"} Member
                       </Button>
                     </div>
                   </form>
                 </TabsContent>
 
                 <TabsContent value="preview" className="space-y-6">
-                  <div className="rounded-2xl p-8 border" style={{ backgroundColor: "#0A0A0B", borderColor: "#374151" }}>
+                  <div
+                    className="rounded-2xl p-8 border"
+                    style={{
+                      backgroundColor: "#0A0A0B",
+                      borderColor: "#374151",
+                    }}
+                  >
                     <div className="text-center max-w-sm mx-auto">
                       {/* Profile Image */}
                       <div className="relative w-24 h-24 mx-auto mb-4 overflow-hidden rounded-full">
-                        {formData.image ? (
+                        {imagePreview ? (
                           <Image
-                            src={formData.image}
+                            src={imagePreview}
                             alt={formData.name || "Preview"}
                             fill
                             className="object-cover"
@@ -419,7 +573,10 @@ export default function TeamModal({
                             className="w-full h-full flex items-center justify-center"
                             style={{ backgroundColor: "#374151" }}
                           >
-                            <User className="w-12 h-12" style={{ color: "#94A3B8" }} />
+                            <User
+                              className="w-12 h-12"
+                              style={{ color: "#94A3B8" }}
+                            />
                           </div>
                         )}
                       </div>
@@ -450,7 +607,9 @@ export default function TeamModal({
 
                       {/* Social Links */}
                       <div className="flex justify-center space-x-3">
-                        {(formData.social.linkedin || formData.social.twitter || formData.social.github) ? (
+                        {formData.social.linkedin ||
+                        formData.social.twitter ||
+                        formData.social.github ? (
                           <>
                             {formData.social.linkedin && (
                               <div

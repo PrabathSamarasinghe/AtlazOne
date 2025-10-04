@@ -2,10 +2,12 @@
 
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Save, Eye, Plus } from "lucide-react";
+import { X, Save, Eye, Plus, Upload } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { handleImageUpload } from "@/lib/coludinary";
+import Image from "next/image";
 import {
   Select,
   SelectContent,
@@ -78,6 +80,10 @@ export default function BlogModal({
     tags: [],
   });
   const [tagInput, setTagInput] = useState("");
+  const [isUploading, setIsUploading] = useState(false);
+  const [uploadError, setUploadError] = useState<string | null>(null);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string>("");
 
   useEffect(() => {
     if (post) {
@@ -93,6 +99,7 @@ export default function BlogModal({
         read_time: post.read_time || "5 min read",
         tags: Array.isArray(post.tags) ? post.tags : [],
       });
+      setImagePreview(post.image || "");
     } else {
       setFormData({
         title: "",
@@ -106,20 +113,45 @@ export default function BlogModal({
         read_time: "5 min read",
         tags: [],
       });
+      setImagePreview("");
     }
-    // Clear the tag input when modal opens/closes
+    
+    // Clear the tag input and reset upload states when modal opens/closes
     setTagInput("");
+    setIsUploading(false);
+    setUploadError(null);
+    setSelectedFile(null);
   }, [post, isOpen]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    // Upload image if a new file was selected
+    let finalFormData = { ...formData };
+    if (selectedFile) {
+      setIsUploading(true);
+      setUploadError(null);
+      
+      try {
+        const uploadedUrl = await handleImageUpload(selectedFile);
+        finalFormData = { ...formData, image: uploadedUrl };
+      } catch (error) {
+        setUploadError(error instanceof Error ? error.message : 'Upload failed');
+        console.error('Upload error:', error);
+        setIsUploading(false);
+        return;
+      } finally {
+        setIsUploading(false);
+      }
+    }
+
     try {
       const response = await fetch(post ? `/api/admin/posts/${post.id}` : "/api/admin/posts/create", {
         method: post ? "PATCH" : "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(finalFormData),
       });
 
       if (!response.ok) {
@@ -131,7 +163,7 @@ export default function BlogModal({
     } catch (error) {
       console.log("Error saving post:", error);
       // Fallback to save form data if API call fails
-      onSave(formData);
+      onSave(finalFormData);
     }
   };
 
@@ -154,6 +186,39 @@ export default function BlogModal({
       ...prev,
       tags: (prev.tags || []).filter((tag) => tag !== tagToRemove),
     }));
+  };
+
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Validate file size (5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      setUploadError('File size must be less than 5MB');
+      return;
+    }
+
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+      setUploadError('Please select an image file');
+      return;
+    }
+
+    setSelectedFile(file);
+    setUploadError(null);
+
+    // Create preview
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setImagePreview(reader.result as string);
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const removeImage = () => {
+    setSelectedFile(null);
+    setImagePreview("");
+    handleChange("image", "");
   };
 
   return (
@@ -371,16 +436,104 @@ export default function BlogModal({
                         />
                       </div>
                     </div>
+                    {/* Featured Image */}
                     <div>
-                      <label className="block text-sm font-medium text-gray-300 mb-2">
-                        Featured Image URL
+                      <label
+                        className="block text-sm font-medium mb-2"
+                        style={{ color: "#94A3B8" }}
+                      >
+                        Featured Image
                       </label>
-                      <Input
-                        value={formData.image}
-                        onChange={(e) => handleChange("image", e.target.value)}
-                        placeholder="https://example.com/image.jpg"
-                        className="bg-gray-700/50 border-gray-600 text-white placeholder-gray-400 focus:border-orange-400"
-                      />
+                      
+                      {!imagePreview ? (
+                        <label
+                          htmlFor="blog-image-upload"
+                          className="flex flex-col items-center justify-center w-full h-48 border-2 border-dashed rounded-2xl cursor-pointer transition-all hover:border-blue-500 hover:bg-gray-800/50"
+                          style={{ 
+                            borderColor: "#374151",
+                            backgroundColor: "#0A0A0B"
+                          }}
+                        >
+                          <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                            <div
+                              className="w-16 h-16 rounded-full flex items-center justify-center mb-4"
+                              style={{ backgroundColor: "#374151" }}
+                            >
+                              <Upload className="w-8 h-8" style={{ color: "#94A3B8" }} />
+                            </div>
+                            <p className="mb-2 text-sm" style={{ color: "#94A3B8" }}>
+                              <span className="font-semibold">Click to upload</span> or drag and drop
+                            </p>
+                            <p className="text-xs" style={{ color: "#6B7280" }}>
+                              PNG, JPG or GIF (MAX. 5MB)
+                            </p>
+                          </div>
+                          <input
+                            id="blog-image-upload"
+                            type="file"
+                            className="hidden"
+                            accept="image/*"
+                            onChange={handleFileSelect}
+                            disabled={isUploading}
+                          />
+                        </label>
+                      ) : (
+                        <div className="relative">
+                          <div
+                            className="relative w-full h-64 rounded-2xl overflow-hidden border-2"
+                            style={{ borderColor: "#374151" }}
+                          >
+                            <Image
+                              src={imagePreview}
+                              alt="Featured image preview"
+                              fill
+                              className="object-cover"
+                            />
+                          </div>
+                          <button
+                            type="button"
+                            onClick={removeImage}
+                            className="absolute top-2 right-2 w-8 h-8 rounded-full flex items-center justify-center transition-colors"
+                            style={{ 
+                              backgroundColor: "#1A1B23",
+                              color: "#F8FAFC"
+                            }}
+                          >
+                            <X className="w-4 h-4" />
+                          </button>
+                          <label
+                            htmlFor="blog-image-upload-change"
+                            className="absolute bottom-2 right-2 px-4 py-2 rounded-lg text-sm font-medium cursor-pointer transition-colors"
+                            style={{
+                              backgroundColor: "#3B82F6",
+                              color: "#F8FAFC"
+                            }}
+                          >
+                            Change Image
+                          </label>
+                          <input
+                            id="blog-image-upload-change"
+                            type="file"
+                            className="hidden"
+                            accept="image/*"
+                            onChange={handleFileSelect}
+                            disabled={isUploading}
+                          />
+                        </div>
+                      )}
+                      
+                      {uploadError && (
+                        <div className="text-red-400 text-sm mt-2">
+                          {uploadError}
+                        </div>
+                      )}
+                      
+                      {isUploading && (
+                        <div className="flex items-center space-x-2 mt-2">
+                          <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
+                          <span className="text-sm text-blue-400">Uploading image...</span>
+                        </div>
+                      )}
                     </div>
                     <div>
                       <label className="block text-sm font-medium text-gray-300 mb-2">
@@ -445,6 +598,7 @@ export default function BlogModal({
                       </Button>{" "}
                       <Button
                         type="submit"
+                        disabled={isUploading}
                         className="group"
                         style={{
                           backgroundColor: "#3B82F6",
@@ -453,7 +607,7 @@ export default function BlogModal({
                         }}
                       >
                         <Save className="w-4 h-4 mr-2 group-hover:scale-110 transition-transform" />
-                        {post ? "Update" : "Create"} Post
+                        {isUploading ? "Uploading..." : post ? "Update" : "Create"} Post
                       </Button>
                     </div>
                   </form>
@@ -461,12 +615,15 @@ export default function BlogModal({
 
                 <TabsContent value="preview" className="space-y-6">
                   <div className="bg-gray-900/50 rounded-2xl p-8 border border-gray-700">
-                    {formData.image && (
-                      <img
-                        src={formData.image}
-                        alt={formData.title}
-                        className="w-full h-64 object-cover rounded-xl mb-6"
-                      />
+                    {imagePreview && (
+                      <div className="relative w-full h-64 rounded-xl overflow-hidden mb-6">
+                        <Image
+                          src={imagePreview}
+                          alt={formData.title || "Blog post featured image"}
+                          fill
+                          className="object-cover"
+                        />
+                      </div>
                     )}
 
                     <div className="space-y-4">
