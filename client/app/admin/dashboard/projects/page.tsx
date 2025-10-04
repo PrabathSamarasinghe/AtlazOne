@@ -9,7 +9,6 @@ import {
   ExternalLink,
   Search,
   Filter,
-  Eye,
   Github
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -23,16 +22,17 @@ interface Project {
   category: string;
   status: 'completed' | 'in-progress' | 'planning';
   client: string;
-  description: string;
-  tech: string[];
   image: string;
-  start_date: string;
-  end_date: string;
+  tech: string[];
   link: string;
   github: string;
+  start_date: string;
+  end_date: string;
+  challenge: string;
+  solution: string;
+  impact: string;
+  industry: string;
 }
-
-// const initialProjects: Project[] = [
 //   {
 //     id: 1,
 //     title: 'E-Commerce Platform',
@@ -93,20 +93,27 @@ export default function ProjectsPage() {
         category: string;
         status: 'completed' | 'in-progress' | 'planning';
         client: string;
-        description: string;
-        tech: string | string[];
         image: string;
-        start_date: string;
-        end_date: string;
+        tech: string | string[];
         link: string;
         github: string;
+        start_date: string;
+        end_date: string;
+        challenge?: string;
+        solution?: string;
+        impact?: string;
+        industry?: string;
       }
       
       const transformedProjects = (data as RawProject[]).map((project) => ({
         ...project,
         tech: typeof project.tech === 'string' ? JSON.parse(project.tech) : project.tech,
         start_date: project.start_date,
-        end_date: project.end_date
+        end_date: project.end_date,
+        challenge: project.challenge || "",
+        solution: project.solution || "",
+        impact: project.impact || "",
+        industry: project.industry || ""
       }));
       setProjects(transformedProjects);
       console.log('Admin projects fetched directly from database:', transformedProjects.length);
@@ -376,10 +383,10 @@ export default function ProjectsPage() {
                       <ExternalLink 
                         className="w-4 h-4 cursor-pointer transition-colors" 
                         style={{ color: '#94A3B8' }}
-                        onMouseEnter={(e) => {
+                        onMouseEnter={(e: any) => {
                           e.currentTarget.style.color = '#F8FAFC';
                         }}
-                        onMouseLeave={(e) => {
+                        onMouseLeave={(e: any) => {
                           e.currentTarget.style.color = '#94A3B8';
                         }}
                       />
@@ -395,10 +402,10 @@ export default function ProjectsPage() {
                       <Github 
                         className="w-4 h-4 cursor-pointer transition-colors" 
                         style={{ color: '#94A3B8' }}
-                        onMouseEnter={(e) => {
+                        onMouseEnter={(e: any) => {
                           e.currentTarget.style.color = '#F8FAFC';
                         }}
-                        onMouseLeave={(e) => {
+                        onMouseLeave={(e: any) => {
                           e.currentTarget.style.color = '#94A3B8';
                         }}
                       />
@@ -415,7 +422,7 @@ export default function ProjectsPage() {
               </h3>
               
               <p className="text-sm mb-4 leading-relaxed" style={{ color: '#94A3B8' }}>
-                {project.description}
+                {project.challenge || project.solution || "Project details will be displayed here."}
               </p>
 
               <div className="flex items-center justify-between text-sm mb-4" style={{ color: '#94A3B8' }}>
