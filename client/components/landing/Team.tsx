@@ -156,6 +156,8 @@ export default function Team() {
                     {" "}
                     <a
                       href={member.social.linkedin}
+                      target="_blank"
+                      rel="noopener noreferrer"
                       className="w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center transition-colors duration-300"
                       style={{ backgroundColor: "#BDC3C7" }}
                     >

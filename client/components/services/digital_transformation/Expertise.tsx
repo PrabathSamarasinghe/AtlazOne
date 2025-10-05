@@ -55,15 +55,21 @@ export function Expertise() {
               <ul className="space-y-2 sm:space-y-3 text-[#BDC3C7] text-sm sm:text-base">
                 <li className="flex items-start gap-2 sm:gap-3">
                   <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-[#ff3131] rounded-full mt-1.5 sm:mt-2 flex-shrink-0"></div>
-                  <span>Reduced operational costs</span>
+                  <span>
+                    Reduced operational costs through automation and optimized
+                    workflows
+                  </span>
                 </li>
                 <li className="flex items-start gap-2 sm:gap-3">
                   <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-[#ff3131] rounded-full mt-1.5 sm:mt-2 flex-shrink-0"></div>
-                  <span>Improved efficiency</span>
+                  <span>Improved efficiency by streamlining processes</span>
                 </li>
                 <li className="flex items-start gap-2 sm:gap-3">
                   <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-[#ff3131] rounded-full mt-1.5 sm:mt-2 flex-shrink-0"></div>
-                  <span>Enhanced scalability</span>
+                  <span>
+                    Enhanced scalability with flexible, future-ready
+                    digital systems
+                  </span>
                 </li>
               </ul>
             </div>
