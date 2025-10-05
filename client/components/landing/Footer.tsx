@@ -31,6 +31,8 @@ export default function Footer() {
             <div className="flex gap-4 justify-center sm:justify-start pt-2">
               <a
                 href="https://www.linkedin.com/company/atlaz-one/?lipi=urn%3Ali%3Apage%3Ad_flagship3_search_srp_all%3BHBBC5gqNTby2GRDW5PkMqg%3D%3D"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="text-[#f5f5f5] hover:text-[#ff3131] transition-colors duration-300 p-2 hover:bg-[#1a1a1a] rounded-lg"
               >
                 <Linkedin className="w-5 h-5" />
