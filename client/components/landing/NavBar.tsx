@@ -73,20 +73,19 @@ const NavBar = () => {
     };
   }, [isServicesDropdownOpen]);
 
-  // Close mobile services dropdown when mobile menu closes
+  
   useEffect(() => {
     if (!isMobileMenuOpen) {
       setIsMobileServicesExpanded(false);
     }
   }, [isMobileMenuOpen]);
 
-  // Handle active section for different page types
+  
   useEffect(() => {
     if (isServicePage) {
       setActiveSection("#services");
     } else {
-      // Reset to proper section when returning to main page
-      // Check for hash in URL first
+      
       const hash = window.location.hash;
       if (hash && hash !== "#") {
         setActiveSection(hash);

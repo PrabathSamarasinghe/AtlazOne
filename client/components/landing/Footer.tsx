@@ -20,8 +20,8 @@ export default function Footer() {
               <div className="rounded-lg text-white">
                 <Image src="/ATLAZONE.png" alt="Logo" width={30} height={30} />
               </div>
-              <span className="text-lg sm:text-xl font-bold">
-                Atlaz<span className="text-[#ff3131]">One</span>
+              <span className="text-lg sm:text-xl font-bold flex items-baseline">
+                ATLAZ<span className="text-[#ff3131]">ONE</span>
               </span>
             </div>
             <p className="text-[#f5f5f5] leading-relaxed text-sm sm:text-base max-w-xs mx-auto sm:mx-0 sm:max-w-none">
