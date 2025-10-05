@@ -12,17 +12,73 @@ import {
   Mail,
   Menu,
   X,
+  ChevronDown,
 } from "lucide-react";
-
 
 const NavBar = () => {
   const [activeSection, setActiveSection] = useState("#home");
   const [isScrolling, setIsScrolling] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isServicesDropdownOpen, setIsServicesDropdownOpen] = useState(false);
+  const [isMobileServicesExpanded, setIsMobileServicesExpanded] =
+    useState(false);
   const scrollTimeoutRef = useRef<NodeJS.Timeout>();
+  const servicesButtonRef = useRef<HTMLAnchorElement>(null);
   const router = useRouter();
-  const pathname = usePathname();  // Check if we're on a service page
+  const pathname = usePathname(); // Check if we're on a service page
   const isServicePage = pathname?.startsWith("/services/");
+
+  // Services dropdown data
+  const serviceItems = [
+    {
+      href: "/services/ai_ml",
+      label: "AI & Machine Learning",
+    },
+    {
+      href: "/services/digital_products",
+      label: "Digital Products",
+    },
+    {
+      href: "/services/digital_transformation",
+      label: "Digital Transformation",
+    },
+
+    {
+      href: "/services/ui_ux_design",
+      label: "UI/UX Design",
+    },
+  ]; // Handle click outside dropdown
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as Element;
+
+      // Check if click is outside both the dropdown and the services button
+      const isClickOnServicesButton = target.closest(
+        '[aria-label*="Navigate to Services"]'
+      );
+      const isClickOnDropdown = target.closest(".services-dropdown");
+
+      if (
+        !isClickOnServicesButton &&
+        !isClickOnDropdown &&
+        isServicesDropdownOpen
+      ) {
+        setIsServicesDropdownOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isServicesDropdownOpen]);
+
+  // Close mobile services dropdown when mobile menu closes
+  useEffect(() => {
+    if (!isMobileMenuOpen) {
+      setIsMobileServicesExpanded(false);
+    }
+  }, [isMobileMenuOpen]);
 
   // Handle active section for different page types
   useEffect(() => {
@@ -36,14 +92,22 @@ const NavBar = () => {
         setActiveSection(hash);
       } else {
         // Detect current section based on scroll position
-        const scrollTop = window.pageYOffset || document.documentElement.scrollTop || 0;
+        const scrollTop =
+          window.pageYOffset || document.documentElement.scrollTop || 0;
         if (scrollTop < 100) {
           setActiveSection("#home");
         } else {
           // Find the current section in viewport
-          const sections = ["#home", "#services", "#portfolio", "#team", "#blog", "#contact"];
+          const sections = [
+            "#home",
+            "#services",
+            "#portfolio",
+            "#team",
+            "#blog",
+            "#contact",
+          ];
           const viewportCenter = window.innerHeight / 2;
-          
+
           for (const sectionId of sections) {
             const element = document.querySelector(sectionId);
             if (element) {
@@ -57,39 +121,82 @@ const NavBar = () => {
         }
       }
     }
-  }, [isServicePage, pathname]);  const scrollToSection = (
+  }, [isServicePage, pathname]);
+  const scrollToSection = (
     e: React.MouseEvent<HTMLAnchorElement>,
     sectionId: string
   ) => {
     e.preventDefault();
 
-    // If we're on a service page, navigate to main page with section hash
-    if (isServicePage) {
-      setActiveSection(sectionId);
-      // Use just the hash to avoid full page refresh
-      router.push(`/${sectionId}`);
-      setIsMobileMenuOpen(false);
-      return;
-    }
+    // Handle services dropdown toggle
+    if (sectionId === "#services") {
+      if (isServicePage) {
+        // On service page - toggle dropdown or navigate to main page
+        if (isServicesDropdownOpen) {
+          // If dropdown is open, close it and navigate to main page services section
+          setIsServicesDropdownOpen(false);
+          router.push("/#services");
+          setIsMobileMenuOpen(false);
+          return;
+        } else {
+          // Open dropdown first
+          setIsServicesDropdownOpen(true);
+          return;
+        }
+      } else {
+        // On main page - toggle dropdown or scroll to section
+        if (isServicesDropdownOpen) {
+          // If dropdown is open, scroll to services section
+          setIsServicesDropdownOpen(false);
+          setActiveSection(sectionId);
+          setIsScrolling(true);
 
-    // On main page - handle normal scrolling
-    setActiveSection(sectionId);
-    setIsScrolling(true);
-
-    if (sectionId === "#home") {
-      window.scrollTo({
-        top: 0,
-        behavior: "smooth",
-      });
+          const element = document.querySelector(sectionId) as HTMLElement;
+          if (element) {
+            const offset = 100;
+            const elementPosition = element.offsetTop - offset;
+            window.scrollTo({
+              top: elementPosition,
+              behavior: "smooth",
+            });
+          }
+        } else {
+          // Open dropdown
+          setIsServicesDropdownOpen(true);
+          return;
+        }
+      }
     } else {
-      const element = document.querySelector(sectionId) as HTMLElement;
-      if (element) {
-        const offset = 100;
-        const elementPosition = element.offsetTop - offset;
+      // Handle other sections normally
+      setIsServicesDropdownOpen(false);
+
+      // If we're on a service page, navigate to main page with section hash
+      if (isServicePage) {
+        setActiveSection(sectionId);
+        router.push(`/${sectionId}`);
+        setIsMobileMenuOpen(false);
+        return;
+      }
+
+      // On main page - handle normal scrolling
+      setActiveSection(sectionId);
+      setIsScrolling(true);
+
+      if (sectionId === "#home") {
         window.scrollTo({
-          top: elementPosition,
+          top: 0,
           behavior: "smooth",
         });
+      } else {
+        const element = document.querySelector(sectionId) as HTMLElement;
+        if (element) {
+          const offset = 100;
+          const elementPosition = element.offsetTop - offset;
+          window.scrollTo({
+            top: elementPosition,
+            behavior: "smooth",
+          });
+        }
       }
     }
     if (typeof (window as any).onscrollend !== "undefined") {
@@ -117,10 +224,20 @@ const NavBar = () => {
       setTimeout(() => {
         window.addEventListener("scroll", detectScrollEnd);
       }, 50);
-    }
-
-    // Close mobile menu when navigating
+    } // Close mobile menu when navigating
     setIsMobileMenuOpen(false);
+  };
+  const handleServiceNavigation = (serviceHref: string) => {
+    setIsServicesDropdownOpen(false);
+    setIsMobileServicesExpanded(false);
+    setIsMobileMenuOpen(false);
+    setActiveSection("#services");
+    router.push(serviceHref);
+  };
+
+  const handleMobileServicesToggle = (e: React.MouseEvent) => {
+    e.preventDefault();
+    setIsMobileServicesExpanded(!isMobileServicesExpanded);
   };
   useEffect(() => {
     // Don't run scroll detection on service pages
@@ -166,7 +283,7 @@ const NavBar = () => {
         });
         ticking = true;
       }
-    };    // Initial check and re-check when returning from service pages
+    };
     handleScroll();
     window.addEventListener("scroll", throttledHandleScroll, { passive: true });
     return () => window.removeEventListener("scroll", throttledHandleScroll);
@@ -182,33 +299,98 @@ const NavBar = () => {
   ];
   return (
     <>
-      {" "}
+      {/* Services Dropdown Portal - Outside navbar */}
+      <AnimatePresence>
+        {isServicesDropdownOpen && (
+          <motion.div
+            initial={{ opacity: 0, y: -10, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -10, scale: 0.95 }}
+            transition={{ duration: 0.2 }}
+            className="services-dropdown fixed top-[calc(2.5rem+3rem+0.5rem)] left-[41.5%] w-80 bg-[#1C1C1C]/95 backdrop-blur-xl rounded-2xl shadow-2xl border border-[#2E2E2E] overflow-hidden"
+            style={{ zIndex: 9999 }}
+          >
+            <div className="p-2">
+              {" "}
+              {serviceItems.map((service, serviceIndex) => (
+                <motion.button
+                  key={service.href}
+                  onClick={() => handleServiceNavigation(service.href)}
+                  className="w-full text-left p-3 rounded-xl hover:bg-[#2E2E2E] transition-colors group"
+                  initial={{ opacity: 0, y: -20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{
+                    delay: serviceIndex * 0.1,
+                    duration: 0.3,
+                    ease: [0.25, 0.46, 0.45, 0.94],
+                  }}
+                >
+                  <div className="text-sm font-medium text-white group-hover:text-[#ff3131] transition-colors">
+                    {service.label}
+                  </div>
+                </motion.button>
+              ))}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>{" "}
       <motion.nav
-        className="hidden md:flex fixed top-6 left-1/4 transform -translate-x-1/2 w-full max-w-[50%] px-8 py-3 bg-[#1C1C1C]/95 text-white justify-center items-center z-50 shadow-2xl border border-[#2E2E2E] rounded-3xl backdrop-blur-xl"
+        className="hidden md:flex fixed top-6 left-1/4 transform -translate-x-1/2 w-full max-w-[50%] px-8 py-3 bg-[#1C1C1C]/95 text-white justify-center items-center shadow-2xl border border-[#2E2E2E] rounded-3xl backdrop-blur-xl"
+        style={{ zIndex: 1000 }}
         initial={{ opacity: 0, y: -100 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 1, ease: [0.25, 0.46, 0.45, 0.94] }}
       >
-        {" "}        <div className="flex gap-2 lg:gap-6 overflow-x-auto">
-          {navItems.map((item, index) => (
-            <a
-              key={item.href}
-              href={item.href}
-              onClick={(e) => scrollToSection(e, item.href)}
-              className={`
-                    relative font-medium text-xs lg:text-sm px-2 lg:px-4 py-2 rounded-2xl whitespace-nowrap flex-shrink-0
+        {" "}
+        <div className="flex gap-2 lg:gap-6 overflow-x-auto">
+          {" "}
+          {navItems.map((item, index) => {
+            if (item.href === "#services") {
+              return (
+                <a
+                  key={item.href}
+                  href={item.href}
+                  onClick={(e) => scrollToSection(e, item.href)}
+                  className={`
+                    relative font-medium text-xs lg:text-sm px-2 lg:px-4 py-2 rounded-2xl whitespace-nowrap flex-shrink-0 flex items-center  gap-2
                     ${
                       activeSection === item.href
                         ? "bg-[#ff3131] text-white shadow-lg shadow-[#a93226]/25"
                         : "hover:bg-[#2E2E2E] hover:text-[#ff3131]"
                     }
+                  `}
+                  aria-label={`Navigate to ${item.label} section`}
+                >
+                  {item.label}
+                  <ChevronDown
+                    className={`w-4 h-4 transition-transform duration-200 font-bold ${
+                      isServicesDropdownOpen ? "rotate-180" : ""
+                    }`}
+                    strokeWidth={3}
+                  />
+                </a>
+              );
+            }
 
+            return (
+              <a
+                key={item.href}
+                href={item.href}
+                onClick={(e) => scrollToSection(e, item.href)}
+                className={`
+                  relative font-medium text-xs lg:text-sm px-2 lg:px-4 py-2 rounded-2xl whitespace-nowrap flex-shrink-0
+                  ${
+                    activeSection === item.href
+                      ? "bg-[#ff3131] text-white shadow-lg shadow-[#a93226]/25"
+                      : "hover:bg-[#2E2E2E] hover:text-[#ff3131]"
+                  }
                 `}
-              aria-label={`Navigate to ${item.label} section`}
-            >
-              {item.label}
-            </a>
-          ))}
+                aria-label={`Navigate to ${item.label} section`}
+              >
+                {item.label}
+              </a>
+            );
+          })}
         </div>
       </motion.nav>
       {/* Mobile Navigation */}
@@ -276,10 +458,110 @@ const NavBar = () => {
                     style={{ color: "white" }}
                   >
                     Navigation
-                  </h3>
+                  </h3>{" "}
                   <div className="grid grid-cols-1 gap-1">
-                    {" "}                    {navItems.map((item, index) => {
+                    {navItems.map((item, index) => {
                       const IconComponent = item.icon;
+
+                      if (item.href === "#services") {
+                        return (
+                          <div key={item.href} className="space-y-1">
+                            <button
+                              onClick={handleMobileServicesToggle}
+                              className="w-full flex flex-col items-center gap-2 p-4 rounded-xl group border"
+                              style={{
+                                backgroundColor:
+                                  activeSection === item.href
+                                    ? "#a93226"
+                                    : "#2E2E2E",
+                                color:
+                                  activeSection === item.href
+                                    ? "white"
+                                    : "#BDC3C7",
+                                borderColor:
+                                  activeSection === item.href
+                                    ? "#a93226"
+                                    : "#2E2E2E",
+                              }}
+                              aria-label={`Toggle ${item.label} submenu`}
+                            >
+                              <div className="flex items-center gap-2">
+                                <IconComponent size={24} />
+                                <ChevronDown
+                                  className={`w-4 h-4 transition-transform duration-200 ${
+                                    isMobileServicesExpanded ? "rotate-180" : ""
+                                  }`}
+                                />
+                              </div>
+                              <span className="font-medium text-sm text-center">
+                                {item.label}
+                              </span>
+                            </button>
+
+                            {/* Mobile Services Submenu */}
+                            <AnimatePresence>
+                              {isMobileServicesExpanded && (
+                                <motion.div
+                                  initial={{ opacity: 0, height: 0 }}
+                                  animate={{ opacity: 1, height: "auto" }}
+                                  exit={{ opacity: 0, height: 0 }}
+                                  transition={{ duration: 0.3 }}
+                                  className="overflow-hidden"
+                                >
+                                  <div className="ml-4 space-y-1">
+                                    {serviceItems.map(
+                                      (service, serviceIndex) => (
+                                        <motion.button
+                                          key={service.href}
+                                          onClick={() =>
+                                            handleServiceNavigation(
+                                              service.href
+                                            )
+                                          }
+                                          className="w-full text-left p-3 rounded-lg border"
+                                          style={{
+                                            backgroundColor: "#1C1C1C",
+                                            borderColor: "#374151",
+                                            color: "#BDC3C7",
+                                          }}
+                                          initial={{ opacity: 0, y: -20 }}
+                                          animate={{ opacity: 1, y: 0 }}
+                                          transition={{
+                                            delay: serviceIndex * 0.1,
+                                            duration: 0.3,
+                                            ease: [0.25, 0.46, 0.45, 0.94],
+                                          }}
+                                          onMouseEnter={(e) => {
+                                            e.currentTarget.style.backgroundColor =
+                                              "#2E2E2E";
+                                            e.currentTarget.style.color =
+                                              "#ff3131";
+                                            e.currentTarget.style.borderColor =
+                                              "#ff3131";
+                                          }}
+                                          onMouseLeave={(e) => {
+                                            e.currentTarget.style.backgroundColor =
+                                              "#1C1C1C";
+                                            e.currentTarget.style.color =
+                                              "#BDC3C7";
+                                            e.currentTarget.style.borderColor =
+                                              "#374151";
+                                          }}
+                                        >
+                                          <div className="text-sm font-medium">
+                                            {service.label}
+                                          </div>
+                                        </motion.button>
+                                      )
+                                    )}
+                                  </div>
+                                </motion.div>
+                              )}
+                            </AnimatePresence>
+                          </div>
+                        );
+                      }
+
                       return (
                         <a
                           key={item.href}
@@ -312,7 +594,8 @@ const NavBar = () => {
                               e.currentTarget.style.borderColor = "#2E2E2E";
                             }
                           }}
-                          aria-label={`Navigate to ${item.label} section`}                        >
+                          aria-label={`Navigate to ${item.label} section`}
+                        >
                           <IconComponent size={24} />
                           <span className="font-medium text-sm text-center">
                             {item.label}
