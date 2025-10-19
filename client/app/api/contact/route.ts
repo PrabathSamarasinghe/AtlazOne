@@ -21,7 +21,7 @@ const emailConfig = {
 const defaultEmailOptions: EmailTemplateOptions = {
   logoUrl: 'https://atlazone.vercel.app/ATLAZONE.png',
   companyName: 'AtlazOne',
-  supportEmail: process.env.SUPPORT_EMAIL || 'atlazone4@gmail.com',
+  supportEmail: process.env.SUPPORT_EMAIL || 'hello@atlaz-one.com',
   phoneNumber: '+94 71 130 7990',
   address: 'Colombo, Sri Lanka'
 };

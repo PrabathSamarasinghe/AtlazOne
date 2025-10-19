@@ -152,7 +152,7 @@ export default function Contact() {
                     className="text-xs sm:text-sm"
                     style={{ color: "#2E2E2E" }}
                   >
-                    atlazone4@gmail.com
+                    hello@atlaz-one.com
                   </p>
                 </div>
               </div>

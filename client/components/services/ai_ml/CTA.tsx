@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowRight, Mail, Phone } from "lucide-react";
+import { ArrowRight, Link, Mail, Phone } from "lucide-react";
 
 export function CTA() {
   return (
@@ -29,12 +29,12 @@ export function CTA() {
           <div className="flex flex-col sm:flex-row items-center gap-3 sm:gap-4 md:gap-6 text-[#2E2E2E] w-full sm:w-auto">
             {" "}
             <a
-              href="mailto:contact@example.com"
+              href="mailto:hello@atlaz-one.com"
               className="flex items-center gap-2 hover:text-[#1C1C1C] transition-colors duration-300 px-3 sm:px-4 py-2 rounded-lg hover:bg-[#F4F6F7] border border-transparent hover:border-[#BDC3C7] w-full sm:w-auto justify-center sm:justify-start"
             >
               <Mail className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" />
               <span className="text-xs sm:text-sm md:text-base truncate">
-                contact@example.com
+                hello@atlaz-one.com
               </span>
             </a>
             <a
@@ -42,7 +42,10 @@ export function CTA() {
               className="flex items-center gap-2 hover:text-[#1C1C1C] transition-colors duration-300 px-3 sm:px-4 py-2 rounded-lg hover:bg-[#F4F6F7] border border-transparent hover:border-[#BDC3C7] w-full sm:w-auto justify-center sm:justify-start"
             >
               <Phone className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" />
-              <span className="text-xs sm:text-sm md:text-base">
+              <span 
+                className="text-xs sm:text-sm md:text-base cursor-pointer"
+                onClick={() => window.open('https://wa.me/94771307990', '_blank')}
+              >
                 +94 77 130 7990
               </span>
             </a>

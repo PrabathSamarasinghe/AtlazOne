@@ -207,11 +207,11 @@ const LandingPage = () => {
 
             <div className="flex items-center gap-6 text-white/90">
               <a
-                href="mailto:contact@example.com"
+                href="mailto:hello@atlaz-one.com"
                 className="flex items-center gap-2 hover:text-white transition-colors duration-300"
               >
                 <Mail className="w-5 h-5" />
-                <span>contact@example.com</span>
+                <span>hello@atlaz-one.com</span>
               </a>
               <a
                 href="tel:+1234567890"
