@@ -33,7 +33,7 @@ export class EmailTemplate {
     logoUrl: 'https://atlazone.vercel.app/ATLAZONE.png', // Update with your actual logo URL
     companyName: 'AtlazOne',
     supportEmail: 'hello@innovatelab.com',
-    phoneNumber: '+94 71 130 7990',
+    phoneNumber: '+94 77 130 7990',
     address: 'Colombo, Sri Lanka'
   };
 
@@ -588,7 +588,7 @@ Submitted: ${new Date().toLocaleString()}
 ---
 AtlazOne - Transforming Ideas Into Digital Reality
 Email: hello@innovatelab.com
-Phone: +94 71 130 7990
+Phone: +94 77 130 7990
 Location: Colombo, Sri Lanka
       `.trim();
     } else {
@@ -609,7 +609,7 @@ What's Next:
 
 If you have any urgent questions, feel free to contact us:
 Email: hello@innovatelab.com
-Phone: +94 71 130 7990
+Phone: +94 77 130 7990
 
 Best regards,
 The AtlazOne Team
