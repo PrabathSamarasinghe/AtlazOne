@@ -1,7 +1,8 @@
 "use client";
 
-import { ArrowRight, Mail, Phone } from "lucide-react";
-
+import { ArrowRight } from "lucide-react";
+import { FaWhatsapp } from 'react-icons/fa';
+import { BiLogoGmail } from 'react-icons/bi';
 export function CTA() {
   return (
     <section className="bg-white py-12 sm:py-16 md:py-20 px-4 sm:px-6 relative overflow-hidden">
@@ -31,16 +32,17 @@ export function CTA() {
               href="mailto:hello@atlaz-one.com"
               className="flex items-center gap-2 hover:text-[#1C1C1C] transition-colors duration-300 px-3 sm:px-4 py-2 rounded-lg hover:bg-[#F4F6F7] border border-transparent hover:border-[#BDC3C7] w-full sm:w-auto justify-center sm:justify-start"
             >
-              <Mail className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" />
+              <BiLogoGmail className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" />
               <span className="text-xs sm:text-sm md:text-base truncate">
                 hello@atlaz-one.com
               </span>
             </a>
             <a
-              href="tel:+1234567890"
+              href="https://wa.me/94771307990"
               className="flex items-center gap-2 hover:text-[#1C1C1C] transition-colors duration-300 px-3 sm:px-4 py-2 rounded-lg hover:bg-[#F4F6F7] border border-transparent hover:border-[#BDC3C7] w-full sm:w-auto justify-center sm:justify-start"
             >
-              <Phone className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" />
+              <FaWhatsapp className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" />
+              
               <span 
                 className="text-xs sm:text-sm md:text-base cursor-pointer"
                 onClick={() => window.open('https://wa.me/94771307990', '_blank')}

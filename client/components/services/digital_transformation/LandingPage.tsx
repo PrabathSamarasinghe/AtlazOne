@@ -214,7 +214,7 @@ const LandingPage = () => {
                 <span>hello@atlaz-one.com</span>
               </a>
               <a
-                href="tel:+1234567890"
+                href="https://wa.me/94771307990"
                 className="flex items-center gap-2 hover:text-white transition-colors duration-300"
               >
                 <Phone className="w-5 h-5" />
